@@ -70,7 +70,7 @@ zmienić adres IP na adres naszej maszyny wirtualnej i port jeżeli w `nginx.con
  
 ## OBS
 W ustawieniach OBS'a, w zakładce stream trzeba wybrać 'Własny serwer strumieniowania' i podać:  
-URL: rtmp://IP:PORT/hls/ gdzie IP to adres maszyny wirtualnej (), a PORT uzupełniamy jeżeli ustawiliśmy inny niż domyślny (1935).
+URL: rtmp://IP:PORT/hls/ gdzie IP to adres maszyny wirtualnej (), a PORT uzupełniamy jeżeli ustawiliśmy inny niż domyślny (1935).  
 Klucz: test
 
 ## Odpalenie wszystkiego
@@ -78,7 +78,7 @@ Klucz: test
 `/usr/local/nginx/sbin/nginx` (jeżeli chcemy zatrzymać `/usr/local/nginx/sbin/nginx -s stop`)  
 2. Dalej na linuxie nasz serwer w nodejs(będąc w folderze z `index.js`):  
 `nodejs index.js`
-PAMIĘTAJCIE O SUDO, BO WAM LINUX NOGI UJEBIE XD
-3. Teraz wracamy na ten lepszy system i w OBSie odpalamy streamka.
-4. Wchodzimy na strone pod adres naszej maszynny wirtualnej (u mnie to było http://192.168.56.101/).
+PAMIĘTAJCIE O SUDO, BO WAM LINUX NOGI UJEBIE XD  
+3. Teraz wracamy na ten lepszy system i w OBSie odpalamy streamka.  
+4. Wchodzimy na strone pod adres naszej maszynny wirtualnej (u mnie to było http://192.168.56.101/).  
 Jeżeli ustawiliśmy w node port 80, to nie musimy podawać portu w adresie.
