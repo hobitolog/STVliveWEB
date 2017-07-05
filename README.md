@@ -1,5 +1,5 @@
 # STVliveWEB
-
+Important SpacjaTV stuff.
 
 ## Maszyna Wirtualna
 Jakiś linux.
@@ -56,7 +56,7 @@ Jest wykorzystywany tylko lokalnie (chyba xD), więc w sumie jeden chuj jaki si�
         }
         root /tmp;
         add_header Cache-Control no-cache;
-	      add_header Access-Control-Allow-Origin *;
+	add_header Access-Control-Allow-Origin *;
     }
 ``` 
 Ustawienia kodowania i headerów HTTP.  
@@ -70,7 +70,7 @@ zmienić adres IP na adres naszej maszyny wirtualnej i port jeżeli w `nginx.con
  
 ## OBS
 W ustawieniach OBS'a, w zakładce stream trzeba wybrać 'Własny serwer strumieniowania' i podać:  
-URL: rtmp://IP:PORT/hls/ gdzie IP to adres maszyny wirtualnej (), a PORT uzupełniamy jeżeli ustawiliśmy inny niż domyślny (1935).  
+URL: rtmp://IP:PORT/hls/ gdzie IP to adres maszyny wirtualnej (u mnie 192.168.56.101), a PORT uzupełniamy jeżeli ustawiliśmy inny niż domyślny (1935).  
 Klucz: test
 
 ## Odpalenie wszystkiego
