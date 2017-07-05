@@ -1,1 +1,84 @@
 # STVliveWEB
+
+
+## Maszyna Wirtualna
+Jakiś linux.
+Ja używałem VirtualBox z Ubuntu 16.04
+### Potrzebne rzeczy:
+- nginx z modułem RTMP  
+[poradnik do instalacji od pana Jaśkiewicza](https://obsproject.com/forum/resources/how-to-set-up-your-own-private-rtmp-server-using-nginx.50/)
+- nodejs i npm  
+```
+sudo apt-get install nodejs  
+sudo apt-get install npm
+```
+- moduł express do node'a
+```
+sudo npm install express
+```
+
+### Konfiguracja nginx
+Plik konfiguracyjny `nginx.conf` znajduje się w folderze `/usr/local/nginx/conf`.  
+#### Wyjaśnienia poszczególnych linijek
+```
+rtmp {
+server {
+    listen 1935;
+```
+
+   Port do RTMP, domyślny to 1935. Można sobie ustawić inny ale trzeba go potem dopisać do IP w OBSie.
+
+```
+   application hls {
+        live on;
+        hls on;
+        hls_path /tmp/hls;
+   }
+```
+
+   Przerabiamy strumień RTMP na HLS.
+   
+```
+http {
+server {
+    listen      8081;
+```
+
+Port do przekazywania HLS. Trzeba go potem dopisać do adresu strumienia w pliku html.  
+Jest wykorzystywany tylko lokalnie (chyba xD), więc w sumie jeden chuj jaki się wybierze byle nie był już używany gdzieś indziej. 
+
+```
+    location /hls {
+        # Serve HLS fragments
+        types {
+            application/vnd.apple.mpegurl m3u8;
+            video/mp2t ts;
+        }
+        root /tmp;
+        add_header Cache-Control no-cache;
+	      add_header Access-Control-Allow-Origin *;
+    }
+``` 
+Ustawienia kodowania i headerów HTTP.  
+
+### Konfiguracja nodeJS
+
+W pliku `index.js` trzeba w linijce:  
+`hls.loadSource('http://192.168.56.101:8081/hls/test.m3u8');`  
+zmienić adres IP na adres naszej maszyny wirtualnej i port jeżeli w `nginx.conf` daliśmy inny.
+
+ 
+## OBS
+W ustawieniach OBS'a, w zakładce stream trzeba wybrać 'Własny serwer strumieniowania' i podać:  
+URL: rtmp://IP:PORT/hls/ gdzie IP to adres maszyny wirtualnej (), a PORT uzupełniamy jeżeli ustawiliśmy inny niż domyślny (1935).
+Klucz: test
+
+## Odpalenie wszystkiego
+1. Na linuxie odpalamy nginx:  
+`/usr/local/nginx/sbin/nginx` (jeżeli chcemy zatrzymać `/usr/local/nginx/sbin/nginx -s stop`)  
+2. Dalej na linuxie nasz serwer w nodejs(będąc w folderze z `index.js`):  
+`nodejs index.js`
+PAMIĘTAJCIE O SUDO, BO WAM LINUX NOGI UJEBIE XD
+3. Teraz wracamy na ten lepszy system i w OBSie odpalamy streamka.
+4. Wchodzimy na strone pod adres naszej maszynny wirtualnej (u mnie to było http://192.168.56.101/).
+Jeżeli ustawiliśmy w node port 80, to nie musimy podawać portu w adresie.
