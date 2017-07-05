@@ -63,7 +63,7 @@ Ustawienia kodowania i headerów HTTP.
 
 ### Konfiguracja nodeJS
 
-W pliku `index.js` trzeba w linijce:  
+W pliku `public/index.html` trzeba w linijce:  
 `hls.loadSource('http://192.168.56.101:8081/hls/test.m3u8');`  
 zmienić adres IP na adres naszej maszyny wirtualnej i port jeżeli w `nginx.conf` daliśmy inny.
 
