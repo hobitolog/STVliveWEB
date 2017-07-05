@@ -1,5 +1,7 @@
 # STVliveWEB
-Important SpacjaTV stuff.
+Important SpacjaTV stuff.  
+Generalny zamysł:  
+![alt text](https://github.com/hobitolog/STVliveWEB/blob/master/schemat.png "Schemat")
 
 ## Maszyna Wirtualna
 Jakiś linux.
