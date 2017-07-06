@@ -87,8 +87,13 @@ Jeżeli ustawiliśmy w node port 80, to nie musimy podawać portu w adresie.
 
 ## Odpalanie skryptów/aplikacji przy starcie systemu
 [Link do stacka z rozwiązaniem](https://stackoverflow.com/questions/12973777/how-to-run-a-shell-script-at-startup)
+
 Jeśli chcemy aby skrypt/aplikacja uruchamiała się przy starcie systemu(linuxowego) należy edytować plik rc.local
 (`/etc/rc.local`) z prawami roota.
+
 Aby to zrobić należy wpisać: `sudo nano /etc/rc.local` a następnie podać hasło.
+
 Chcąć uruchomić skrypt znajdujący się w scieżce `/path/to/my/app.sc`(gdzie `app.sc` to nazwa skryptu) należy dopisać linię:
-`/path/to/my/app.sc &` przed linią `exit 0`. Znak ampersanda pozwoli, aby zadanie odpaliło się w tle, a skrypt wywoływał dalsze polecenia. Należy przyjąć, że `/etc/rc.local` jest skryptem wywoływanym przy każdym uruchomieniu systemu. Oczywiści może on wywoływać inne skrypty oraz uruchamiać aplikacje.
+`/path/to/my/app.sc &` przed linią `exit 0`. Znak ampersanda pozwoli, aby zadanie odpaliło się w tle, a skrypt wywoływał dalsze polecenia. 
+
+Należy przyjąć, że `/etc/rc.local` jest skryptem wywoływanym przy każdym uruchomieniu systemu. Oczywiści może on wywoływać inne skrypty oraz uruchamiać aplikacje.
