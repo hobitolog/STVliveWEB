@@ -90,4 +90,4 @@ Należy przyjąć, że `/etc/rc.local` jest skryptem wywoływanym przy każdym u
 
 ## Credits
 - [Robert Kosakowski](https://github.com/Kosert)
-- [Krystian Minta](https://github.com/Penis)
+- [Krystian Minta](https://github.com/Yuunai)
