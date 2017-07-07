@@ -1,7 +1,8 @@
 # STVliveWEB
 Important SpacjaTV stuff.  
 Generalny zamysł:  
-![alt text](https://github.com/hobitolog/STVliveWEB/blob/master/schemat.png "Schemat")
+![alt text](../master/schemat.png "Schemat")
+**//TUDUDU: Trzeba będzie to zmienić, nodeJS powinien być hostowany przez samego nginxa, a nie osobno. Potem się tym zajmiemy** 
 
 ## Maszyna Wirtualna
 Jakiś linux.
@@ -30,50 +31,18 @@ sudo apt-get install npm
 ```
 sudo npm install express
 ```
+- ffmpeg **//NA 90% TE KOMENDY DZIAŁAJĄ TYLKO NA UBUNTU**
+```
+sudo add-apt-repository ppa:jonathonf/ffmpeg-3
+sudo apt-get install ffmpeg=7:3.3.2-1~16.04.york1 
+```
 
 ### Konfiguracja nginx
 Plik konfiguracyjny `nginx.conf` znajduje się w folderze `/usr/local/nginx/conf`.  
 #### Wyjaśnienia poszczególnych linijek
-```
-rtmp {
-server {
-    listen 1935;
-```
+Szczegółowy opis był zbyt długi i przeniosłem go do osobnego pliku.
+Można go znaleźć [tutaj](../master/nginxCONF.md)
 
-   Port do RTMP, domyślny to 1935. Można sobie ustawić inny ale trzeba go potem dopisać do IP w OBSie.
-
-```
-   application hls {
-        live on;
-        hls on;
-        hls_path /tmp/hls;
-   }
-```
-
-   Przerabiamy strumień RTMP na HLS.
-   
-```
-http {
-server {
-    listen      8081;
-```
-
-Port do przekazywania HLS. Trzeba go potem dopisać do adresu strumienia w pliku html.  
-Jest wykorzystywany tylko lokalnie (chyba xD), więc w sumie jeden chuj jaki się wybierze byle nie był już używany gdzieś indziej. 
-
-```
-    location /hls {
-        # Serve HLS fragments
-        types {
-            application/vnd.apple.mpegurl m3u8;
-            video/mp2t ts;
-        }
-        root /tmp;
-        add_header Cache-Control no-cache;
-	add_header Access-Control-Allow-Origin *;
-    }
-``` 
-Ustawienia kodowania i headerów HTTP.  
 
 ### Konfiguracja nodeJS
 
@@ -84,7 +53,7 @@ zmienić adres IP na adres naszej maszyny wirtualnej i port jeżeli w `nginx.con
  
 ## OBS
 W ustawieniach OBS'a, w zakładce stream trzeba wybrać 'Własny serwer strumieniowania' i podać:  
-URL: rtmp://IP:PORT/hls/ gdzie IP to adres maszyny wirtualnej (u mnie 192.168.56.101), a PORT uzupełniamy jeżeli ustawiliśmy inny niż domyślny (1935).  
+URL: rtmp://*IP*:*PORT*/live/ gdzie *IP* to adres maszyny wirtualnej (u mnie 192.168.56.101), a *PORT* uzupełniamy jeżeli ustawiliśmy inny niż domyślny (1935).  
 Klucz: test
 
 ## Odpalenie wszystkiego
@@ -109,3 +78,16 @@ Chcąć uruchomić skrypt znajdujący się w scieżce `/path/to/my/app.sc`(gdzie
 `/path/to/my/app.sc &` przed linią `exit 0`. Znak ampersanda pozwoli, aby zadanie odpaliło się w tle, a skrypt wywoływał dalsze polecenia. 
 
 Należy przyjąć, że `/etc/rc.local` jest skryptem wywoływanym przy każdym uruchomieniu systemu. Oczywiści może on wywoływać inne skrypty oraz uruchamiać aplikacje.
+
+## Attributions
+- [nginx](https://nginx.org/en/)
+- [nginx RTMP module](https://github.com/arut/nginx-rtmp-module)
+- [node.js](https://nodejs.org/en/)
+- [Express.js](https://expressjs.com/)
+- [NPM](https://www.npmjs.com/)
+- [hls.js](https://github.com/video-dev/hls.js/)
+- [jQuery](https://jquery.com/)
+
+## Credits
+- [Robert Kosakowski](https://github.com/Kosert)
+- [Krystian Minta](https://github.com/Penis)
