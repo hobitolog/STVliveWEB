@@ -8,7 +8,19 @@ Jakiś linux.
 Ja używałem VirtualBox z Ubuntu 16.04
 ### Potrzebne rzeczy:
 - nginx z modułem RTMP  
-[poradnik do instalacji od pana Jaśkiewicza](https://obsproject.com/forum/resources/how-to-set-up-your-own-private-rtmp-server-using-nginx.50/)
+[poradnik do instalacji od pana Jaśkiewicza](https://obsproject.com/forum/resources/how-to-set-up-your-own-private-rtmp-server-using-nginx.50/)  
+tl;dr:  
+```
+sudo apt-get install build-essential libpcre3 libpcre3-dev libssl-dev
+wget http://nginx.org/download/nginx-1.13.1.tar.gz
+wget https://github.com/arut/nginx-rtmp-module/archive/master.zip
+tar -zxvf nginx-1.13.1.tar.gz
+unzip master.zip
+cd nginx-1.13.1
+./configure --with-http_ssl_module --add-module=../nginx-rtmp-module-master
+make
+sudo make install
+```
 - nodejs i npm  
 ```
 sudo apt-get install nodejs  

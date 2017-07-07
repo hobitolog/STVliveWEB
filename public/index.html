@@ -1,19 +1,33 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>title</title>
+    <title>SpacjaTV</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   </head>
   <body>
+<video id="player" style="width:1280px;height:720px;" controls="true" autoplay="true"></video>
+<div class="debug">Debug info:<br></div>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-<video id="video"></video>
 <script>
-  if(Hls.isSupported()) {
-    var video = document.getElementById('video');
+  if(Hls.isSupported())
+  {
+    $('.debug').append("HLS supported<br>");
+    var player = document.getElementById('player');
     var hls = new Hls();
     hls.loadSource('http://192.168.56.101:8081/hls/test.m3u8');
-    hls.attachMedia(video);
-    hls.on(Hls.Events.MANIFEST_PARSED,function() {
-      video.play();
+    hls.attachMedia(player);
+    /*hls.on(Hls.Events.ERROR, function (event, data) {
+      var errorType = data.type;
+      var errorDetails = data.details;
+      var errorFatal = data.fatal;
+    $('.debug').append(errorType + "<br>");
+    $('.debug').append(errorDetails + "<br>");
+    $('.debug').append(errorFatal + "<br>");
+  });*/
+
+    hls.on(Hls.Events.MANIFEST_PARSED,function(event, data) {
+      $('.debug').append("Qualities found: " + data.levels.length + "<br>");
+      player.play();
   });
  }
 </script>
