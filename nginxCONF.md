@@ -1,3 +1,4 @@
+[Powrót do pliku README](../master/README.md)
 ## Opis szczegółowy pliku nginx.conf
 
 `user www-data;`  
@@ -33,10 +34,10 @@ Maksymalna wartość fragmentu, domyślnie 4096.
     }
 ```
 Aplikacja `live` zbierający sygnał z OBS. Używa ffmpeg aby skonwertować przychodzący sygnał na 4 różne:
-1. _low - Video: H.264, 240p, bitrate 256 kbps, Audio: AAC, bitrate 32 kbps
-2. _mid - Video: H.264, 480p, bitrate 768 kbps, Audio: AAC, bitrate 96 kbps
-3. _hd720 - Video: H.264, 720p, bitrate 1920 kbps, Audio: AAC, bitrate 128 kbps
-4. _src - Oryginalne parametry
+1. *_low* - Video: H.264, 240p, bitrate 256 kbps, Audio: AAC, bitrate 32 kbps
+2. *_mid* - Video: H.264, 480p, bitrate 768 kbps, Audio: AAC, bitrate 96 kbps
+3. *_hd720* - Video: H.264, 720p, bitrate 1920 kbps, Audio: AAC, bitrate 128 kbps
+4. *_src* - Oryginalne parametry
 Powstałe 4 strumienie są kierowane do aplikacji `hls`.
 
 ```
@@ -67,7 +68,7 @@ Nie mam pojęcia co robią te opcje, ale podobno polepszają optymalizacje wysy�
 server {
     listen      8081;
 ```
-Serwer HTTP ze streamem HLS na porcie 8081.
+Serwer HTTP ze streamem HLS na porcie 8081. Trzeba go potem dopisać do adresu strumienia w pliku html.  
 
 ```
 # rtmp stat
@@ -87,7 +88,11 @@ Pod adresem `http://<IP>:8081/stat` jest dostępny xml z parametrami aplikacji, 
         }
         root /tmp/;
         add_header Cache-Control no-cache;
-		    add_header Access-Control-Allow-Origin *;
+	add_header Access-Control-Allow-Origin *;
     }
 ```
+Ustawienia kodowania i nagłówków HTTP.
 Pod adres http://<IP>:8081/hls/` jest właściwy strumień HLS osadzany na stronce.
+
+## Credits
+- [Robert Kosakowski](https://github.com/Kosert)
