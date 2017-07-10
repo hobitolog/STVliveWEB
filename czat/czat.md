@@ -2,7 +2,7 @@
 W pierwszym wydaniu czatu mamy 2 okienka do wprowadzania danych. Pierwsze to pole na nick, drugie na wiadomość. Wiadomości wysyłamy zatwierdzająć wiadomość enterem lub klikając przycisko "send".
 
 # Wymagania
--nodejs i npm
+- nodejs i npm
 ```
 sudo apt-get install nodejs
 sudo apt-get install npm
