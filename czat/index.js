@@ -8,8 +8,8 @@ res.sendFile(__dirname + '/public/index.html');
 });
 
 io.on('connection', function(socket){
-socket.on('chat message', function(message){
-	io.emit('chat message', message);
+socket.on('chat message', function(message, nick){
+	io.emit('chat message', message, nick);
 	});
 });
 

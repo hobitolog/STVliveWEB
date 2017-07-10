@@ -6,7 +6,8 @@
 	* { margin: 0; padding: 0; box-sizing: border-box;}
 	body { font: 13px Helvetica, Arial;}
 	form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%;}
-	form input { border: 0; padding 10px; width: 90%; margin-right: .5%;}
+	form input { border: 3px solid #73AD21; padding: 5px; width: 10%; left: 5px; bottom: 5%}
+	form input { border: 0; width: 90%; top: 95%; margin-right: .5%;}
 	form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px;}
 	#massages { list-style-type: none; margin: 0; padding: 0;}
 	#messages li { padding: 5px 10 px;}
@@ -16,6 +17,7 @@
 	<body>
 	<ul id="messages"></ul>
 	<form action="">
+	<input id="nick" autocomplete="off" />
 	<input id="m" autocomplete="off" /><button>Send</button>
 	</form>
 	<script src="/socket.io/socket.io.js"></script>
@@ -24,12 +26,12 @@
 	$(function () {
 	var socket = io();
 	$('form').submit(function(){
-	socket.emit('chat message', $('#m').val());
+	socket.emit('chat message', $('#m').val(), $('#nick').val());
 	$('#m').val('');
 	return false;
 	});
-	socket.on('chat message', function(message){
-	$('#messages').append($('<li>').text(message));
+	socket.on('chat message', function(message, nick){
+	$('#messages').append($('<li>').text(nick + ": " + message));
 	});
 	});
 	</script>
