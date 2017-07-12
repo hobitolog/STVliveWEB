@@ -6,30 +6,28 @@
   </head>
   <body>
 <video id="player" style="width:1280px;height:720px;" controls="true" autoplay="true"></video>
-<div class="debug">Debug info:<br></div>
+<div class="info">
+  Jakieś ważne newsy<br><br><br><br><br><br><br>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <script>
   if(Hls.isSupported())
   {
-    $('.debug').append("HLS supported<br>");
+    console.log("HLS supported");
     var player = document.getElementById('player');
     var hls = new Hls();
-    hls.loadSource('http://192.168.56.101:8081/hls/test.m3u8');
+    hls.loadSource('http://192.168.56.101:8081/hls/live.m3u8');
     hls.attachMedia(player);
-    /*hls.on(Hls.Events.ERROR, function (event, data) {
-      var errorType = data.type;
-      var errorDetails = data.details;
-      var errorFatal = data.fatal;
-    $('.debug').append(errorType + "<br>");
-    $('.debug').append(errorDetails + "<br>");
-    $('.debug').append(errorFatal + "<br>");
-  });*/
 
     hls.on(Hls.Events.MANIFEST_PARSED,function(event, data) {
-      $('.debug').append("Qualities found: " + data.levels.length + "<br>");
+      console.log("Qualities found: " + data.levels.length);
       player.play();
   });
  }
 </script>
+
+<footer>
+  <input type='button' value='Panel admina' onclick="document.location.href='admin';"/>
+</footer>
   </body>
 </html>

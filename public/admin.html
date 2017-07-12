@@ -1,0 +1,78 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>SpacjaTV</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  </head>
+  <body>
+<video id="player" style="width:1280px;height:720px;" controls="true" autoplay="true"></video>
+
+<form class="qualitySettings" action="saveQualitySettings" method="post">
+  Ustawienia<br>
+  <fieldset>
+      <legend>Konwertuj strumień do jakości</legend>
+      Wszystkie wartości 'bitrate' powinny być w kilobitach na sekundę.<br><br>
+      <div id="checkboxes">
+      </div>
+      <br>
+      <b>Uwaga!</b><br>
+      <b>Zapisanie ustawień spowoduje zresetowanie nginx, a tym samym przerwanie aktualnej transmisji!</b><br>
+      <input type="submit" value="Zapisz">
+    </fieldset>
+</form>
+
+<form id="streamKeySettings" action="resetStreamKey" method="post">
+  <fieldset>
+      <legend>Streamkey</legend>
+      <b>Uwaga //TODO: jakiś opis z ostrzeżeniem xd</b><br>
+      <b>Zmiana klucza spowoduje zresetowanie nginx, a tym samym przerwanie aktualnej transmisji!</b><br>
+      <input id="sk" type="password" name="streamKey" size="40" readonly><br>
+      <button type="button" onclick='document.getElementById("sk").type="text";'>Pokaż</button>
+      <input type="submit" value="Generuj nowy klucz">
+    </fieldset>
+</form>
+
+<form id="changePassword" action="/changePassword" method="post">
+  <fieldset>
+      <legend>Zmień hasło do panelu admina</legend>
+      Nowe hasło:<br>
+      <input id="pass" type="password" name="pass"><br>
+      Powtórz nowe hasło:<br>
+      <input id="pass2" type="password"><br>
+      <button type="button" onclick="changePassword()">Zmień</button>
+    </fieldset>
+</form>
+
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script>
+function changePassword() {
+
+    var pass = document.getElementById("pass").value
+    if( pass === document.getElementById("pass2").value)
+    {
+      if(pass.match(/^[a-z0-9]+$/i))
+        document.getElementById("changePassword").submit()
+      else
+      alert("Błąd: Alfanumeryczne pls")
+    }
+    else {
+      alert("Błąd: Wpisane hasła są różne")
+    }
+}
+</script>
+
+<script>
+  if(Hls.isSupported())
+  {
+    var player = document.getElementById('player');
+    var hls = new Hls();
+    hls.loadSource('http://192.168.56.101:8081/hls/live.m3u8');
+    hls.attachMedia(player);
+    hls.on(Hls.Events.MANIFEST_PARSED,function(event, data) {
+      player.play();
+  });
+ }
+</script>
+  </body>
+</html>
