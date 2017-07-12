@@ -2,7 +2,7 @@
 Important SpacjaTV stuff.  
 Generalny zamysł:  
 ![alt text](../master/schemat.png "Schemat")
-**//TUDUDU: Trzeba będzie to zmienić, nodeJS powinien być hostowany przez samego nginxa, a nie osobno. Potem się tym zajmiemy** 
+Dążymy do stanu gdzie nie dotykamy w ogóle nginxa. W całości obsługuje go nodejs.
 
 ## Maszyna Wirtualna
 Jakiś linux.
@@ -27,18 +27,21 @@ sudo make install
 sudo apt-get install nodejs  
 sudo apt-get install npm
 ```
-- moduł express do node'a
+- dodatkowe moduły do node'a
 ```
 sudo npm install express
+sudo npm install jquery
+sudo npm install basic-auth
+sudo npm install cheerio
 ```
-- ffmpeg **//NA 90% TE KOMENDY DZIAŁAJĄ TYLKO NA UBUNTU**
+- ffmpeg **//Te komendy działają na mojej wersji ubuntu, na innym może być trochę inaczej. Ważne żeby ffmpeg był w jakimś ogarniętym nowszym buildzie, tutaj używałem 3.3.2 (przykładowo na 2.8 nie działało)**
 ```
 sudo add-apt-repository ppa:jonathonf/ffmpeg-3
 sudo apt-get install ffmpeg=7:3.3.2-1~16.04.york1 
 ```
 
 ### Konfiguracja nginx
-Plik konfiguracyjny `nginx.conf` znajduje się w folderze `/usr/local/nginx/conf`.  
+Konfiguracją nginx w zajmuje się nodejs. Jeśli chcesz wprowadzić jakieś zmiany w pliku `nginx.conf` zmień plik o tej nazwie w folderze node.
 #### Wyjaśnienia poszczególnych linijek
 Szczegółowy opis był zbyt długi i przeniosłem go do osobnego pliku.
 Można go znaleźć [tutaj](../master/nginxCONF.md)
@@ -46,25 +49,25 @@ Można go znaleźć [tutaj](../master/nginxCONF.md)
 
 ### Konfiguracja nodeJS
 
-W pliku `public/index.html` trzeba w linijce:  
-`hls.loadSource('http://192.168.56.101:8081/hls/test.m3u8');`  
+W plikach `public/index.html` oraz `public/admin.html` trzeba w linijce:  
+`hls.loadSource('http://192.168.56.101:8081/hls/live.m3u8');`  
 zmienić adres IP na adres naszej maszyny wirtualnej i port jeżeli w `nginx.conf` daliśmy inny.
-
+**//TUDUDU: skrypt jest ten sam w obu plikach. Trzeba przenieść go do jakiegoś jednego pliku js**
  
 ## OBS
 W ustawieniach OBS'a, w zakładce stream trzeba wybrać 'Własny serwer strumieniowania' i podać:  
 URL: rtmp://*IP*:*PORT*/live/ gdzie *IP* to adres maszyny wirtualnej (u mnie 192.168.56.101), a *PORT* uzupełniamy jeżeli ustawiliśmy inny niż domyślny (1935).  
-Klucz: test
+Klucz: Klucz można sprawdzić i zmienić w panelu admina. Domyślna wartość przy pierwszym uruchomieniu to `DEFAULTKEY`
 
 ## Odpalenie wszystkiego
-1. Na linuxie odpalamy nginx:  
-`/usr/local/nginx/sbin/nginx` (jeżeli chcemy zatrzymać `/usr/local/nginx/sbin/nginx -s stop`)  
-2. Dalej na linuxie nasz serwer w nodejs(będąc w folderze z `index.js`):  
+1. Na linuxie uruchamiamy nasz serwer w nodejs (będąc w folderze z `index.js`):  
 `nodejs index.js`
 PAMIĘTAJCIE O SUDO, BO WAM LINUX NOGI UJEBIE XD  
-3. Teraz wracamy na ten lepszy system i w OBSie odpalamy streamka.  
-4. Wchodzimy na strone pod adres naszej maszynny wirtualnej (u mnie to było http://192.168.56.101/).  
-Jeżeli ustawiliśmy w node port 80, to nie musimy podawać portu w adresie.
+2. Wchodzimy na strone pod adres naszej maszynny wirtualnej (u mnie to było http://192.168.56.101/).  
+Jeżeli ustawiliśmy w node port 80, to nie musimy podawać portu w adresie.  
+3. Logujemy się do panelu admina, domyślne dane logowania to STVadmin:password  
+**Przy pierwszym uruchomieniu, w panelu admina zmieniamy hasło na lepsze i generujemy nowy klucz streama.**  
+4. Teraz wracamy na ten lepszy system, w OBSie wklejamy klucz streama z panelu i możemy uruchamiać.  
 
 ## Odpalanie skryptów/aplikacji przy starcie systemu
 [Link do stacka z rozwiązaniem](https://stackoverflow.com/questions/12973777/how-to-run-a-shell-script-at-startup)
@@ -87,7 +90,11 @@ Należy przyjąć, że `/etc/rc.local` jest skryptem wywoływanym przy każdym u
 - [NPM](https://www.npmjs.com/)
 - [hls.js](https://github.com/video-dev/hls.js/)
 - [jQuery](https://jquery.com/)
+- [basic-auth](https://github.com/jshttp/basic-auth)
+- [cheerio](https://github.com/cheeriojs/cheerio)
 
 ## Credits
-- [Robert Kosakowski](https://github.com/Kosert)
-- [Krystian Minta](https://github.com/Yuunai)
+- [Robert Kosakowski](https://github.com/Kosert)  
+- [Krystian Minta](https://github.com/Yuunai)  
+  
+*Ale głównie pan Kosakowski :P*
