@@ -21,7 +21,7 @@
 	<input id="m" autocomplete="off" /><button>Send</button>
 	</form>
 	<script src="/socket.io/socket.io.js"></script>
-	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script>
 	$(function () {
 	var socket = io();
@@ -32,6 +32,9 @@
 	});
 	socket.on('chat message', function(message, nick){
 	$('#messages').append($('<li>').text(nick + ": " + message));
+	});
+	socket.on('log message', function(message){
+	$('#messages').append($('<li>').text(message));
 	});
 	});
 	</script>
