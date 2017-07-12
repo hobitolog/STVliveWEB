@@ -25,20 +25,29 @@ Maksymalna wartość fragmentu, domyślnie 4096.
 ```
     application live {
 	live on;
-  
+	exec_options on;
+ ```
+ Aplikacja `live` zbierający sygnał z OBS.  
+ Włączamy opcje odbierania transmisji na żywo i odbierania streamu tylko z określonego klucza.
+ ```
+ #FFMPEG_BEGIN
 	exec ffmpeg -i rtmp://localhost:1935/live/test -async 1 -vsync -1
 	            	        -c:v libx264 -c:a aac -b:v 256k -b:a 32k -vf "scale=480:trunc(ow/a/2)*2" -tune zerolatency -preset veryfast -crf 23 -f flv rtmp://localhost:1935/hls/test_low
                         -c:v libx264 -c:a aac -b:v 768k -b:a 96k -vf "scale=720:trunc(ow/a/2)*2" -tune zerolatency -preset veryfast -crf 23 -f flv rtmp://localhost:1935/hls/test_mid
                         -c:v libx264 -c:a aac -b:v 1920k -b:a 128k -vf "scale=1280:trunc(ow/a/2)*2" -tune zerolatency -preset veryfast -crf 23 -f flv rtmp://localhost:1935/hls/test_hd720
                         -c copy -f flv rtmp://localhost:1935/hls/test_src; # 2>>/tmp/log;
+#FFMPEG_END
     }
 ```
-Aplikacja `live` zbierający sygnał z OBS. Używa ffmpeg aby skonwertować przychodzący sygnał na 4 różne:
-1. *_low* - Video: H.264, 240p, bitrate 256 kbps, Audio: AAC, bitrate 32 kbps
-2. *_mid* - Video: H.264, 480p, bitrate 768 kbps, Audio: AAC, bitrate 96 kbps
-3. *_hd720* - Video: H.264, 720p, bitrate 1920 kbps, Audio: AAC, bitrate 128 kbps
-4. *_src* - Oryginalne parametry
-Powstałe 4 strumienie są kierowane do aplikacji `hls`.
+Sekcja oznaczona przez `#FFMPEG_BEGIN` i `#FFMPEG_END` jest automatycznie generowana przez nodejs.  
+**NIE ZMIENIAĆ JEJ RĘCZNIE!!!**  
+W załączonym przykładzie:
+>Komenda ffmpeg konwertuje przychodzący sygnał na 4 różne:
+>1. *_low* - Video: H.264, 240p, bitrate 256 kbps, Audio: AAC, bitrate 32 kbps
+>2. *_mid* - Video: H.264, 480p, bitrate 768 kbps, Audio: AAC, bitrate 96 kbps
+>3. *_hd720* - Video: H.264, 720p, bitrate 1920 kbps, Audio: AAC, bitrate 128 kbps
+>4. *_src* - Oryginalne parametry
+>Powstałe 4 strumienie są kierowane do aplikacji `hls`.
 
 ```
     application hls {
@@ -47,14 +56,19 @@ Powstałe 4 strumienie są kierowane do aplikacji `hls`.
         hls on;
         hls_path /tmp/hls/;
 	hls_nested on;
-
+#HLS_VARIANT_BEGIN
 	hls_variant _low BANDWIDTH=288000;
 	hls_variant _mid BANDWIDTH=448000;
 	hls_variant _hi BANDWIDTH=2048000;
 	hls_variant _src BANDWIDTH=4096000;
+#HLS_VARIANT_END
     }
 ```
-Aplikacja `hls` przyjmuje 4 strumienie z aplikacji `live`. Oznacza każdy z nich sugerowanym bitrate'm dla klienta.
+Aplikacja `hls` przyjmuje strumienie z aplikacji `live`. Konwertowane fragmenty do przesłania umieszcza w folderze `/tmp/hls/`.
+Opcja zagnieżdżania umieszcza różne jakości w osobnych folderach.
+Sekcja oznaczona przez `#HLS_VARIANT_BEGIN` i `#HLS_VARIANT_END` jest automatycznie generowana przez nodejs.  
+**NIE ZMIENIAĆ JEJ RĘCZNIE!!!**  
+Oznacza każdy ze strumieni łącznym bitrate'm dla odtwarzacza-klienta.
 
 ```
 http {
@@ -92,7 +106,7 @@ Pod adresem `http://<IP>:8081/stat` jest dostępny xml z parametrami aplikacji, 
     }
 ```
 Ustawienia kodowania i nagłówków HTTP.
-Pod adres http://<IP>:8081/hls/` jest właściwy strumień HLS osadzany na stronce.
+Pod adresem `http://<IP>:8081/hls/<klucz>` jest właściwy strumień HLS osadzany na stronce.
 
 ## Credits
 - [Robert Kosakowski](https://github.com/Kosert)
