@@ -49,10 +49,9 @@ Można go znaleźć [tutaj](../master/nginxCONF.md)
 
 ### Konfiguracja nodeJS
 
-W plikach `public/index.html` oraz `public/admin.html` trzeba w linijce:  
-`hls.loadSource('http://192.168.56.101:8081/hls/live.m3u8');`  
+W pliku `public/main.js` trzeba w pierwszej linijce:  
+`var liveSource = 'http://192.168.56.101:8081/hls/live.m3u8'`  
 zmienić adres IP na adres naszej maszyny wirtualnej i port jeżeli w `nginx.conf` daliśmy inny.
-**//TUDUDU: skrypt jest ten sam w obu plikach. Trzeba przenieść go do jakiegoś jednego pliku js**
  
 ## OBS
 W ustawieniach OBS'a, w zakładce stream trzeba wybrać 'Własny serwer strumieniowania' i podać:  
@@ -61,8 +60,7 @@ Klucz: Klucz można sprawdzić i zmienić w panelu admina. Domyślna wartość p
 
 ## Odpalenie wszystkiego
 1. Na linuxie uruchamiamy nasz serwer w nodejs (będąc w folderze z `index.js`):  
-`nodejs index.js`
-PAMIĘTAJCIE O SUDO, BO WAM LINUX NOGI UJEBIE XD  
+`sudo nodejs index.js`  
 2. Wchodzimy na strone pod adres naszej maszynny wirtualnej (u mnie to było http://192.168.56.101/).  
 Jeżeli ustawiliśmy w node port 80, to nie musimy podawać portu w adresie.  
 3. Logujemy się do panelu admina, domyślne dane logowania to STVadmin:password  
