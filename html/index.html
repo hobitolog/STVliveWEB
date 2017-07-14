@@ -1,0 +1,27 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>SpacjaTV</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  </head>
+  <body>
+<video id="player" style="width:1280px;height:720px;" poster="xd.png" controls="true" autoplay="true"></video>
+
+<div class="quality">
+  Jakość:
+  <select id="qualitySelect" onchange="selectQuality()">
+    <option value="auto">Auto</option>
+  </select>
+</div>
+
+<div class="info">
+  Jakieś ważne newsy<br><br><br><br><br><br><br>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="main.js"></script>
+
+<footer>
+  <input type='button' value='Panel admina' onclick="document.location.href='admin';"/>
+</footer>
+  </body>
+</html>

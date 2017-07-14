@@ -5,7 +5,14 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   </head>
   <body>
-<video id="player" style="width:1280px;height:720px;" controls="true" autoplay="true"></video>
+<video id="player" style="width:1280px;height:720px;" poster="xd.png" controls="true" autoplay="true"></video>
+
+<div class="quality">
+  Jakość:
+  <select id="qualitySelect" onchange="selectQuality()">
+    <option value="auto">Auto</option>
+  </select>
+</div>
 
 <form class="qualitySettings" action="saveQualitySettings" method="post">
   Ustawienia<br>
@@ -45,6 +52,7 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="main.js"></script>
 <script>
 function changePassword() {
 
@@ -60,19 +68,6 @@ function changePassword() {
       alert("Błąd: Wpisane hasła są różne")
     }
 }
-</script>
-
-<script>
-  if(Hls.isSupported())
-  {
-    var player = document.getElementById('player');
-    var hls = new Hls();
-    hls.loadSource('http://192.168.56.101:8081/hls/live.m3u8');
-    hls.attachMedia(player);
-    hls.on(Hls.Events.MANIFEST_PARSED,function(event, data) {
-      player.play();
-  });
- }
 </script>
   </body>
 </html>

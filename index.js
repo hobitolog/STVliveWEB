@@ -12,6 +12,8 @@ var qs = require('querystring')
 var exec = require('child_process').exec
 var app = express()
 
+app.use('/', express.static(path.join(__dirname, 'public')))
+
 // saves settings to settings.json
 // if  reloadNginx=true => applies settings to nginx.conf
 function saveConfig( reloadNginx )
@@ -79,6 +81,8 @@ function saveConfig( reloadNginx )
             nginxConf.write(' BANDWIDTH=')
             var totalBitrate = parseInt(q.video.bitrate)*1000 + parseInt(q.audio.bitrate)*1000
             nginxConf.write(totalBitrate.toString())
+            nginxConf.write(',RESOLUTION=')
+            nginxConf.write(q.video.resolution)
             nginxConf.write(';\n')
           }
         }
@@ -126,14 +130,14 @@ function getCheckBoxCode(quality) {
 }
 
 app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname, '/public', '/index.html'))
+  res.sendFile(path.join(__dirname, '/html', '/index.html'))
 })
 
 app.get('/admin', function (req, res)
 {
   if (topSecretAuth(req))
   {
-    fs.readFile(path.join(__dirname, '/public', '/admin.html'),'utf8', function (err, html) {
+    fs.readFile(path.join(__dirname, '/html', '/admin.html'),'utf8', function (err, html) {
         var $ = cheerio.load(html)
 
         for (var i = 0; i < settings.qualities.length; i++) {
@@ -152,53 +156,77 @@ app.get('/admin', function (req, res)
 })
 
 app.post('/saveQualitySettings', function (req, res) {
-  var body = '';
-  req.on('data', function (data)
+  if (topSecretAuth(req))
   {
-     body += data;
-  });
-  req.on('end', function ()
+    var body = '';
+    req.on('data', function (data)
+    {
+       body += data;
+    });
+    req.on('end', function ()
+    {
+      var params = qs.parse(body)
+
+      for (var i = 0; i < settings.qualities.length; i++) {
+        settings.qualities[i].selected = false
+      }
+
+      for (var i = 0; i < params.quality.length; i++) {
+        q = settings.qualities.find(x => x.name === params.quality[i])
+        q.selected = true
+        var vid = 'bitrate_video_' + q.name
+        var aud = 'bitrate_audio_' + q.name
+        q.video.bitrate = params[vid]
+        q.audio.bitrate = params[aud]
+      }
+      saveConfig(true)
+    })
+    res.redirect('/admin')
+  }
+  else
   {
-    var params = qs.parse(body)
-
-    for (var i = 0; i < settings.qualities.length; i++) {
-      settings.qualities[i].selected = false
-    }
-
-    for (var i = 0; i < params.quality.length; i++) {
-      q = settings.qualities.find(x => x.name === params.quality[i])
-      q.selected = true
-      var vid = 'bitrate_video_' + q.name
-      var aud = 'bitrate_audio_' + q.name
-      q.video.bitrate = params[vid]
-      q.audio.bitrate = params[aud]
-    }
-    saveConfig(true)
-  });
-  res.redirect('/admin')
+    res.statusCode = 401
+    res.setHeader('WWW-Authenticate', 'Basic realm="admin"')
+    res.end('Access denied')
+  }
 })
 
 app.post('/resetStreamKey', function (req, res) {
-
-  var newKey = crypto.randomBytes(20).toString('hex')
-  settings.streamKey = newKey;
-  saveConfig(true)
-  res.redirect('/admin')
+    if (topSecretAuth(req))
+    {
+      var newKey = crypto.randomBytes(20).toString('hex')
+      settings.streamKey = newKey;
+      saveConfig(true)
+      res.redirect('/admin')
+    }
+    else {
+      res.statusCode = 401
+      res.setHeader('WWW-Authenticate', 'Basic realm="admin"')
+      res.end('Access denied')
+    }
 })
 
 app.post('/changePassword', function (req, res) {
-      var body = '';
-      req.on('data', function (data)
-      {
-         body += data;
-      });
-      req.on('end', function ()
-      {
-        var params = qs.parse(body)
-        settings.login.pass = params.pass
-        saveConfig(false)
-      });
+  if (topSecretAuth(req))
+  {
+    var body = '';
+    req.on('data', function (data)
+    {
+       body += data;
+    });
+    req.on('end', function ()
+    {
+      var params = qs.parse(body)
+      settings.login.pass = params.pass
+      saveConfig(false)
+    });
     res.redirect('/admin')
+  }
+  else {
+    res.statusCode = 401
+    res.setHeader('WWW-Authenticate', 'Basic realm="admin"')
+    res.end('Access denied')
+  }
 })
 
 // load settings and start server
