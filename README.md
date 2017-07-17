@@ -49,9 +49,12 @@ Można go znaleźć [tutaj](../master/nginxCONF.md)
 
 ### Konfiguracja nodeJS
 
-W pliku `public/main.js` trzeba w pierwszej linijce:  
-`var liveSource = 'http://192.168.56.101:8081/hls/live.m3u8'`  
-zmienić adres IP na adres naszej maszyny wirtualnej i port jeżeli w `nginx.conf` daliśmy inny.
+W pliku `public/main.js` trzeba w pierwszych linijkach:  
+```
+var liveSource = 'http://192.168.56.101:8081/hlsOnline/live.m3u8'
+var offlineSource = 'http://192.168.56.101:8081/hlsOffline/live.m3u8'
+```
+zmienić adresy IP na adres naszej maszyny wirtualnej i port jeżeli w `nginx.conf` daliśmy inny.
  
 ## OBS
 W ustawieniach OBS'a, w zakładce stream trzeba wybrać 'Własny serwer strumieniowania' i podać:  
