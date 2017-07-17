@@ -47,7 +47,47 @@ W załączonym przykładzie:
 >Powstałe 3 strumienie są kierowane do aplikacji `hls`.
 
 ```
-    application hls {
+    application offline {
+	live on;
+  exec_options on;
+```
+ Aplikacja `offline` odbiera transmisję zastępczą z nodejs.  
+
+```
+#FFMPEG_OFFLINE_BEGIN
+	exec ffmpeg -i rtmp://localhost:1935/live/test -async 1 -vsync -1
+		        -c:v libx264 -c:a aac -b:v 256k -b:a 32k -vf scale=352:240 -tune zerolatency -preset veryfast -crf 23 -f flv rtmp://localhost:1935/hls/test_low
+                        -c:v libx264 -c:a aac -b:v 768k -b:a 96k -vf scale=854:480 -tune zerolatency -preset veryfast -crf 23 -f flv rtmp://localhost:1935/hls/test_mid
+                        -c:v libx264 -c:a aac -b:v 1920k -b:a 128k -vf scale=1280:720 -tune zerolatency -preset veryfast -crf 23 -f flv rtmp://localhost:1935/hls/test_hd720
+                        -c copy -f flv rtmp://localhost:1935/hls/test_src name=test; # 2>>/tmp/log;
+#FFMPEG_OFFLINE_END
+```
+Sekcja oznaczona przez `#FFMPEG_OFFLINE_BEGIN` i `#FFMPEG_OFFLINE_END` jest automatycznie generowana przez nodejs.  
+**NIE ZMIENIAĆ JEJ RĘCZNIE!!!**  
+
+```
+    application hlsOffline
+    {
+      live on;
+      deny publish all;
+      allow publish 127.0.0.1;
+
+      hls on;
+      hls_path /tmp/hlsOffline/;
+      hls_nested on;
+#HLS_OFFLINE_VARIANT_BEGIN
+hls_variant _low BANDWIDTH=288000,RESOLUTION=352x240;
+hls_variant _mid BANDWIDTH=864000,RESOLUTION=854x480;
+hls_variant _hd720 BANDWIDTH=2048000,RESOLUTION=1280x720;
+#HLS_OFFLINE_VARIANT_END
+```
+Aplikacja `hlsOffline` przyjmuje strumienie z aplikacji `offline`. Konwertowane fragmenty do przesłania umieszcza w folderze `/tmp/hlsOffline/`.  
+Opcja zagnieżdżania umieszcza różne jakości w osobnych folderach.  
+Sekcja oznaczona przez `#HLS_OFFLINE_VARIANT_BEGIN` i `#HLS_OFFLINE_VARIANT_END` jest automatycznie generowana przez nodejs.  
+**NIE ZMIENIAĆ JEJ RĘCZNIE!!!**  
+Oznacza każdy ze strumieni łącznym bitrate'm dla odtwarzacza-klienta.
+```
+    application hlsOnline {
         live on;
 
         hls on;
@@ -60,7 +100,7 @@ W załączonym przykładzie:
 #HLS_VARIANT_END
     }
 ```
-Aplikacja `hls` przyjmuje strumienie z aplikacji `live`. Konwertowane fragmenty do przesłania umieszcza w folderze `/tmp/hls/`.  
+Aplikacja `hlsOnline` przyjmuje strumienie z aplikacji `live`. Konwertowane fragmenty do przesłania umieszcza w folderze `/tmp/hls/`.  
 Opcja zagnieżdżania umieszcza różne jakości w osobnych folderach.  
 Sekcja oznaczona przez `#HLS_VARIANT_BEGIN` i `#HLS_VARIANT_END` jest automatycznie generowana przez nodejs.  
 **NIE ZMIENIAĆ JEJ RĘCZNIE!!!**  
