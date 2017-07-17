@@ -2,7 +2,24 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
+
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var morgan = require('morgan');
+var mongoose = require('mongoose');
+var passport = require('passport');
+var flash = require('connect-flash');
+
+var User = require('./app/models/user');
+
+//Zmienne
 var streamNumber = Number(fs.readFileSync('stream_number'));
+usersMap = new Map();
+
+var configDB = require('./config/database.js');
+mongoose.connect(configDB.url);
+require('./config/passport')(passport);
+
 
 function getLogFileName() {
 var date = new Date();
@@ -10,9 +27,37 @@ var fileDate = date.getFullYear() + (date.getMonth() < 9 ? "0" : "") + (date.get
 return fileDate + "_" + streamNumber;
 }
 
+
+//Podgląd i sesja
+app.use(morgan('dev'));
+app.use(cookieParser());
+app.use(session({secret: 'sesjowy sekrecik :3',
+		  saveUninitialized: true,
+		  resave: true}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+
+
 app.get('/', function(req, res){
 res.sendFile(__dirname + '/public/index.html');
+
+if(req.isAuthenticated()){
+// Sprawdzanie czy użytkownik jest zalogowany i dopisywanie go do aktywnych socketów
+usersMap.set(req.cookies.io, req.session.passport.user);
+} else {
+//Jeśli nie jest zalogowany to wpisz, że się jest nieautoryzowany
+usersMap.set(req.cookies.io, 'unauthorized');
+}
+});
+
+
 io.on('connection', function(socket){
+var start = socket.handshake.headers.cookie.indexOf('io=');
+var socketIo = socket.handshake.headers.cookie.substring(start + 3, start + 23);
+
+var name ="";
+//wypisanie historii czatu
 	fs.readFile('./logs/' + getLogFileName(), 'utf8', function(err, msg){
 	if(err) {
 		if(err.code === "ENOENT") {
@@ -24,35 +69,43 @@ io.on('connection', function(socket){
 		}
 		else {
 		var logs = msg.split("\n");
-		for(i=0; i<msg.length; i++) {
+		msg="";
+		for(i=0; i<logs.length; i++) {
 		if(logs[i] == null || logs[i] == "")
 			break;
 		socket.emit('log message', logs[i]);
+		logs[i]="";
 		}}
-
 		});
-	});
-});
 
-io.on('connection', function(socket){
-socket.on('chat message', function(message, nick){
+if(usersMap.get(socketIo)=='unauthorized')
+	name='unauthorized';
+else{
+User.findOne({'_id' : usersMap.get(socketIo) }, function(err, user) {
+if(err) {
+//Jesli coś pójdzie nie tak, to użytkownik nie przejdzie autoryzacji
+	name = "unauthorized";
+	return done(err);
+}
+	//Jeśli się znalazł to będzie ok
+if(user) {
+	//user.facebook.photo	= profile.photos[0].value; //Na razie bez zdjęcia
+	name = user.facebook.name;
+	}});
+}
+
+socket.on('chat message', function(message){
+
 	var reg = /^[\s\t]*$/;
 	if(reg.test(message))
 		socket.emit('log message', 'Your message was empty!');
+	else if(name=="unauthorized" || name=="") {
+		socket.emit('log message', 'Log in with facebook to send a message!');
+	}
 	else
 	{
 		var date = new Date();
-		var hour = date.getHours();
-		hour = (hour < 10 ? "0" : "") + hour;
-	
-		var min = date.getMinutes();
-		min = (min < 10 ? "0" : "") + min;
-	
-		var sec = date. getSeconds();
-		sec = (sec <10 ? "0" : "") + sec;
-		
-		var chatDate = hour + ":" + min + ":" + sec;
-		var nickTime = chatDate + "\t[" + nick + "]";
+		var nickTime = date.toLocaleTimeString() + "\t[" + name + "]";
 	 
 		io.emit('chat message', message, nickTime);
 		fs.appendFile('./logs/' + getLogFileName(), nickTime + ":\t" + message + "\n", function(err) {
@@ -60,8 +113,18 @@ socket.on('chat message', function(message, nick){
 			});
 	}
 	});
-});
+		socket.on('disconnect', function(socket) {
+	usersMap.delete(socketIo);
+		}); //Sprzątanie
+	});
 
+
+app.get('/auth/facebook', passport.authenticate('facebook', {'scope': 'email'}));
+
+app.get('/auth/facebook/callback', 
+	passport.authenticate('facebook', 
+		{ successRedirect: '/',
+		  failitureRedirect: '/'}));
 
 http.listen(3000, function(){
 console.log('listening on *:3000');
