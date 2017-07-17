@@ -27,7 +27,8 @@ passport.use(new FacebookStrategy({
 	//pull in app id and secret from auth.js file
 	clientID	: configAuth.facebookAuth.clientID,
 	clientSecret	: configAuth.facebookAuth.clientSecret,
-	callbackURL	: configAuth.facebookAuth.callbackURL
+	callbackURL	: configAuth.facebookAuth.callbackURL,
+	profileFields	: configAuth.facebookAuth.profileFields
 	},
 
 //ogar tego co przyjdzie z FB
@@ -47,10 +48,9 @@ function(token, refreshToken, profile, done) {
 			//uzupełnij model
 			newUser.facebook.id 	= profile.id;
 			newUser.facebook.token	= token;
-			newUser.facebook.name 	= profile.name.givenName + ' ' + profile.name.familyName; //poprawić!**************
-			//na razie bez emaila i zdjęcia bo zjebany kurwa fejsbus nie odsyła.
-			//newUser.facebook.email	= profile.emails[0].value; // facebook nie odsyła maili
-			//newUser.facebook.photo	= profile.photos[0].value; //jebane scierwo
+			newUser.facebook.name 	= profile.name.displayName;
+			newUser.facebook.email	= profile.emails[0].value;
+			newUser.facebook.photo	= profile.photos[0].value;
 			//zapisz
 			newUser.save(function(err) {
 				if(err)
