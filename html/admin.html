@@ -14,13 +14,31 @@
   </select>
 </div>
 
-<form class="qualitySettings" action="saveQualitySettings" method="post">
-  Ustawienia<br>
+Ustawienia<br>
+<form id="qualitySettings" action="saveQualitySettings" method="post">
   <fieldset>
       <legend>Konwertuj strumień do jakości</legend>
       Wszystkie wartości 'bitrate' powinny być w kilobitach na sekundę.<br><br>
       <div id="checkboxes">
       </div>
+      <br>
+      <b>Uwaga!</b><br>
+      <b>Zapisanie ustawień spowoduje zresetowanie nginx, a tym samym przerwanie aktualnej transmisji!</b><br>
+      <input type="submit" value="Zapisz">
+    </fieldset>
+</form>
+
+<form id="reloadFiles" action="reloadOfflineFiles" method="post" hidden="hidden"></form>
+
+<form id="offlineSettings" action="saveOfflineSettings" method="post">
+  <fieldset>
+      <legend>Transmisja zastępcza</legend>
+      Lista plików z folderu videos:<br>
+      <ul id="offlineFiles">
+      </ul>
+      <button type="button" onclick="document.getElementById('reloadFiles').submit();">Odśwież listę plików</button>
+      <br>Jakość dla transmisji zastępczej:<br>
+      <div id="offlineCheckboxes">|</div>
       <br>
       <b>Uwaga!</b><br>
       <b>Zapisanie ustawień spowoduje zresetowanie nginx, a tym samym przerwanie aktualnej transmisji!</b><br>
@@ -39,7 +57,7 @@
     </fieldset>
 </form>
 
-<form id="changePassword" action="/changePassword" method="post">
+<form id="changePassword" action="changePassword" method="post">
   <fieldset>
       <legend>Zmień hasło do panelu admina</legend>
       Nowe hasło:<br>

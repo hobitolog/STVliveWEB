@@ -7,7 +7,8 @@
   "streamKey": "DEFAULTKEY",
   "qualities": [
     {
-      "selected": true,
+      "selected": false,
+      "selectedOffline": false,
       "name": "low",
       "video": {
         "codec": "libx264",
@@ -21,6 +22,7 @@
     },
     {
       "selected": true,
+      "selectedOffline": true,
       "name": "mid",
       "video": {
         "codec": "libx264",
@@ -34,6 +36,7 @@
     },
     {
       "selected": true,
+      "selectedOffline": true,
       "name": "hd720",
       "video": {
         "codec": "libx264",
@@ -47,6 +50,7 @@
     },
     {
       "selected": false,
+      "selectedOffline": false,
       "name": "hd1080",
       "video": {
         "codec": "libx264",
@@ -60,6 +64,7 @@
     },
     {
       "selected": false,
+      "selectedOffline": false,
       "name": "uhd2k",
       "video": {
         "codec": "libx264",
@@ -73,6 +78,7 @@
     },
     {
       "selected": false,
+      "selectedOffline": false,
       "name": "uhd4k",
       "video": {
         "codec": "libx264",
