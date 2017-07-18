@@ -178,7 +178,10 @@ function topSecretAuth(req) {
 // get input checkbox html code for specified quality
 function getCheckBoxCode(quality, advanced) {
   var part1 = '<input type="checkbox" name="quality" value="'
-  var checked = quality.selected ? '" checked>' : '">'
+  if(advanced)
+    var checked = quality.selected ? '" checked>' : '">'
+  else
+    var checked = quality.selectedOffline ? '" checked>' : '">'
 
   if(advanced) {
     return part1.concat(quality.name, checked, quality.name, ' - video: ', quality.video.resolution, ', ', quality.video.codec,
@@ -273,7 +276,7 @@ app.post('/saveOfflineSettings', function (req, res) {
       }
 
       saveConfig(true)
-      playOfflineFile()
+      //playOfflineFile()
     })
     res.redirect('/admin')
   }
@@ -289,7 +292,7 @@ app.post('/reloadOfflineFiles', function (req, res) {
   if (topSecretAuth(req))
   {
     loadOfflineFiles()
-    playOfflineFile()
+    //playOfflineFile()
     res.redirect('/admin')
   }
   else
