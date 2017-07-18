@@ -7,5 +7,19 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "basic-auth": "^1.1.0",
+    "cheerio": "^1.0.0-rc.2",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.15.3",
+    "express-session": "^1.15.3",
+    "jquery": "^3.2.1",
+    "mongoose": "^4.11.3",
+    "morgan": "^1.8.2",
+    "passport": "^0.3.2",
+    "passport-facebook": "^2.1.1",
+    "socket.io": "^2.0.3"
+  }
 }
