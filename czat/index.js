@@ -43,13 +43,13 @@ app.get('/', function(req, res){
 res.sendFile(__dirname + '/public/index.html');
 
 if(req.isAuthenticated()){
-// Sprawdzanie czy użytkownik jest zalogowany i dopisywanie go do aktywnych socketów
-usersMap.set(req.cookies.io, req.session.passport.user);
-} else {
-//Jeśli nie jest zalogowany to wpisz, że się jest nieautoryzowany
-usersMap.set(req.cookies.io, 'unauthorized');
-}
-});
+	// Sprawdzanie czy użytkownik jest zalogowany i dopisywanie go do aktywnych socketów
+	usersMap.set(req.cookies.io, req.session.passport.user);
+	} else {
+		//Jeśli nie jest zalogowany to wpisz, że się jest nieautoryzowany
+		usersMap.set(req.cookies.io, 'unauthorized');
+		}
+		});
 
 
 io.on('connection', function(socket){
@@ -110,7 +110,7 @@ socket.on('chat message', function(message){
 	{
 		var date = new Date();
 		var nickTime = date.toLocaleTimeString() + "\t[" + name + "]";
-	 
+
 		io.emit('chat message', message, nickTime, pic);
 		fs.appendFile('./logs/' + getLogFileName(), userId + ' ~||~ ' + '<img src="' + pic + '"> '+ nickTime + ":\t" + message + "\n", function(err) {
 			if(err) throw err;
@@ -125,12 +125,11 @@ socket.on('chat message', function(message){
 
 app.get('/auth/facebook', passport.authenticate('facebook', {'scope': ['email', 'user_photos']}));
 
-app.get('/auth/facebook/callback', 
-	passport.authenticate('facebook', 
+app.get('/auth/facebook/callback',
+	passport.authenticate('facebook',
 		{ successRedirect: '/',
 		  failitureRedirect: '/'}));
 
 http.listen(3000, function(){
 console.log('listening on *:3000');
 });
-
