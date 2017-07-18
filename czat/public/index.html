@@ -30,11 +30,11 @@
 	$('#m').val('');
 	return false;
 	});
-	socket.on('chat message', function(message, nick){
-	$('#messages').append($('<li>').text(nick + ": " + message));
+	socket.on('chat message', function(message, nick, pic){
+	$('#messages').append('<li>' + '<img src="' + pic + '"> ' + nick + ": " + message + '</li>');
 	});
 	socket.on('log message', function(message){
-	$('#messages').append($('<li>').text(message));
+	$('#messages').append('<li>' + message + '</li>');
 	});
 	});
 	</script>

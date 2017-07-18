@@ -56,7 +56,9 @@ io.on('connection', function(socket){
 var start = socket.handshake.headers.cookie.indexOf('io=');
 var socketIo = socket.handshake.headers.cookie.substring(start + 3, start + 23);
 
-var name ="";
+var name = "";
+var pic = "";
+var userId = "";
 //wypisanie historii czatu
 	fs.readFile('./logs/' + getLogFileName(), 'utf8', function(err, msg){
 	if(err) {
@@ -73,7 +75,8 @@ var name ="";
 		for(i=0; i<logs.length; i++) {
 		if(logs[i] == null || logs[i] == "")
 			break;
-		socket.emit('log message', logs[i]);
+		msg = logs[i].indexOf(' ~||~ '); //msg jako pomocnicza do przechowywanie indexu przerywnika
+		socket.emit('log message', logs[i].slice(Number(msg) + 5));
 		logs[i]="";
 		}}
 		});
@@ -89,8 +92,9 @@ if(err) {
 }
 	//Jeśli się znalazł to będzie ok
 if(user) {
-	//user.facebook.photo	= profile.photos[0].value; //Na razie bez zdjęcia
 	name = user.facebook.name;
+	pic = user.facebook.photo;
+	userId = user.facebook.id;
 	}});
 }
 
@@ -107,8 +111,8 @@ socket.on('chat message', function(message){
 		var date = new Date();
 		var nickTime = date.toLocaleTimeString() + "\t[" + name + "]";
 	 
-		io.emit('chat message', message, nickTime);
-		fs.appendFile('./logs/' + getLogFileName(), nickTime + ":\t" + message + "\n", function(err) {
+		io.emit('chat message', message, nickTime, pic);
+		fs.appendFile('./logs/' + getLogFileName(), userId + ' ~||~ ' + '<img src="' + pic + '"> '+ nickTime + ":\t" + message + "\n", function(err) {
 			if(err) throw err;
 			});
 	}
