@@ -12,6 +12,7 @@ var qs = require('querystring')
 var exec = require('child_process').exec
 var execSync = require('child_process').execSync
 var app = express()
+var http = require('http').Server(app);
 
 // make all files in /public/ available globally
 app.use('/', express.static(path.join(__dirname, 'public')))
@@ -387,11 +388,8 @@ var offlineStreamKey = crypto.randomBytes(20).toString('hex')
 //load list of offline files
 loadOfflineFiles()
 //start server
-var server = app.listen(80, function () {
-  var host = server.address().address
-  var port = server.address().port
-
-  console.log("Serwer OK, adres: http://%s:%s", host, port)
+http.listen(80, function () {
+  console.log("Serwer OK")
 
   // if nginx is running
   if(fs.existsSync(path.join(settings.nginxPath, '/logs/nginx.pid')))
