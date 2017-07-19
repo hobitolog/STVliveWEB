@@ -8,13 +8,13 @@
 		* { margin: 0; padding: 0; box-sizing: border-box;}
 			body { font: 13px Helvetica, Arial;}
 			#m { border: 3; width: 80%; padding: 2px;}
-			#massages { margin: 0; padding: 0; position: relative; top: 0; height: 95%;}
+			#messages { margin: 0; padding: 0; position: relative; top: 0; height: 95%; overflow-y: auto;}
 			#messages li:nth_child(odd) { background: #eee;}
 			#czat {background: #090; width: 20%; height: 100%; position: fixed; right: 0; padding: 5px;}
 			#videoSite { width: 80%; float: left;}
 			#sendButton {width: 19%;padding: 2px; float: right;}
       #inputSend {position: absolute; bottom: 1%; width: 97%;}
-      #mess {position: absolute; top: 1%; width: 99%; overflow-y: auto; height: 88%;}
+      #mess {position: absolute; top: 1%; width: 99%; height: 88%;}
       ul {list-style: none;}
 		</style>
 	</head>
@@ -66,9 +66,11 @@
 	});
 	socket.on('chat message', function(message, nick, pic){
 	$('#messages').append('<li>' + '<img src="' + pic + '"> ' + nick + ": " + message + '</li>');
+  $('#messages').animate({scrollTop: $('#messages').prop("scrollHeight")}, 500);
   });
 	socket.on('log message', function(message){
 	$('#messages').append('<li>' + message + '</li>');
+  $('#messages').animate({scrollTop: $('#messages').prop("scrollHeight")}, 500);
 	});
 	});
 	</script>
