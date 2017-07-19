@@ -14,6 +14,69 @@ sudo npm install --save express
 sudo npm install --save socket.io
 ```
 
+- Mongodb do przechowywania danych użytkowników.
+Aby zainstalować mongodb wpisujemy kolejno:
+```
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+```
+Jeśli komenda została wpisane poprawnie powinniśmy zobaczyć:
+```
+			Output
+gpg: Total number processed: 1
+gpg:		   imported: 1 (RSA: 1)
+```
+Kolejny krok:
+```
+echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+
+sudo apt-get update
+
+sudo apt-get install -y mongodb-org
+```
+Następnie edytujemy/tworzymy plik mongodb.service w katalogu `/etc/systemd/system`:
+```
+sudo nano /etc/systemd/system/mongodb.service
+```
+I wypełniamy go tak, aby wyglądał w ten sposób:
+```
+[Unit]
+Description=High-performance, schema-free document-oriented database
+After=network.target
+
+[Service]
+User=mongodb
+ExecStart=/usr/bin/mongod --quiet --config /etc/mongod.conf
+
+[Install]
+WantedBy=multi-user.target
+```
+Następnie startujemy nowo utworzoną usługę:
+```
+sudo systemctl start mongodb
+```
+Jeśli chcemy sprawdzić czy została uruchomiona można zrobić to komendą:
+```
+sudo systemctl status mongodb
+```
+Aby ustawić autostart usługi wpisujemy:
+```
+sudo systemctl enable mongodb
+```
+Jeśli usługa nie może zlaleźć katalogu `/data/db` to należy go utworzyć, a następnie zmienić jego właściciela na mongodb:
+```
+sudo mkdir /data/db
+sudo chown mongodb /data/db
+sudo chgrp mongodb /data/db
+```
+Z bazą danych z konsoli możemy połączyć się przy użyciu komendy
+```
+mongo
+```
+Aby przełączyć się na bazę o nazwie [nazwa] należy wpisać komendę:
+```
+use [nazwa]
+```
+
 # Wyjaśnienie kodu
 - Sekcja odpowiedzialna za import modułów oraz powiązania między ich instancjami.
 ```
