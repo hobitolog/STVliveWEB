@@ -29,10 +29,7 @@ sudo apt-get install npm
 ```
 - dodatkowe moduły do node'a
 ```
-sudo npm install express
-sudo npm install jquery
-sudo npm install basic-auth
-sudo npm install cheerio
+sudo npm install
 ```
 - ffmpeg **//Te komendy działają na mojej wersji ubuntu, na innym może być trochę inaczej. Ważne żeby ffmpeg był w jakimś ogarniętym nowszym buildzie, tutaj używałem 3.3.2 (przykładowo na 2.8 nie działało)**
 ```
