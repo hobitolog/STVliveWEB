@@ -10,12 +10,15 @@
 			#m { border: 3; width: 80%; padding: 2px;}
 			#messages { margin: 0; padding: 0; position: relative; top: 0; height: 95%; overflow-y: auto;}
 			#messages li:nth_child(odd) { background: #eee;}
-			#czat {background: #090; width: 20%; height: 100%; position: fixed; right: 0; padding: 5px;}
+			#czat {background: #; width: 20%; height: 100%; position: fixed; right: 0; padding: 5px; }
 			#videoSite { width: 80%; float: left;}
 			#sendButton {width: 19%;padding: 2px; float: right;}
       #inputSend {position: absolute; bottom: 1%; width: 97%;}
       #mess {position: absolute; top: 1%; width: 99%; height: 88%;}
       ul {list-style: none;}
+      .emoji {width: 30px; height: 30px;}
+      .profilePic {width: 30px; height: 30px;}
+      .logo {width: 50px; height: 25px;}
 		</style>
 	</head>
 	<body>
@@ -39,7 +42,7 @@
 			</footer>
 	</div>
 		<!--**************************************************-->
-		<div id="czat">
+		<div id="czat" style="border: 1px solid black">
 <div id="mess">
 	<ul id="messages"></ul>
 </div>
@@ -64,7 +67,7 @@
 	return false;
 	});
 	socket.on('chat message', function(message, nick, pic){
-	$('#messages').append('<li>' + '<img src="' + pic + '"> ' + nick + ": " + message + '</li>');
+	$('#messages').append('<li>' + '<img class="profilePic" src="' + pic + '"> ' + nick + ": " + message + '</li>');
   $('#messages').animate({scrollTop: $('#messages').prop("scrollHeight")}, 500);
   });
 	socket.on('log message', function(message){

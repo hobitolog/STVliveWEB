@@ -13,6 +13,7 @@
     "cheerio": "^1.0.0-rc.2",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.3",
+    "emoji-parser": "^0.1.2",
     "express": "^4.15.3",
     "express-session": "^1.15.3",
     "jquery": "^3.2.1",

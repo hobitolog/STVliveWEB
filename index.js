@@ -23,7 +23,8 @@ var morgan = require('morgan');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var flash = require('connect-flash');
-
+var emoji = require('emoji-parser');
+emoji.init(__dirname + "/emoji").update();
 var User = require('./app/models/user');
 
 //Zmienne
@@ -39,6 +40,19 @@ function getLogFileName() {
   var date = new Date();
   var fileDate = date.getFullYear() + (date.getMonth() < 9 ? "0" : "") + (date.getMonth() + 1) + (date.getDate() < 10 ? "0" : "") + date.getDate();
   return fileDate + "_" + streamNumber;
+}
+
+function emotRepl(str)
+{
+  str = str.replace(/\:[\)\]]/g, ':smile:');
+  str = str.replace(/\:[\(\[]/g, ':worried');
+  str = str.replace(/\:[Dd]/g, ':smiley:');
+  str = str.replace(/\:3/g, ':kissing:');
+  str = str.replace(/\:\*/g, ":kissing_heart:");
+  str = str.replace(/kappa/g, '<img class="emoji" src="/emoji/kappa.png">');
+  str = str.replace(/spacjaTV/g, '<img class="logo" src="/emoji/logo.png">');
+  str = str.replace(/lenny/g, '( ͡° ͜ʖ ͡°)')
+  return str;
 }
 
 //Podgląd i sesja
@@ -467,6 +481,10 @@ app.get('/auth/facebook/callback',
 		{ successRedirect: '/',
 		  failitureRedirect: '/'}));
 
+app.get('/emoji/:name', function (req, res) {
+  res.sendFile(path.join(__dirname, '/emoji', req.params.name))
+})
+
 io.on('connection', function(socket) {
   var start = socket.handshake.headers.cookie.indexOf('io=');
   var socketIo = socket.handshake.headers.cookie.substring(start + 3, start + 23);
@@ -522,8 +540,10 @@ io.on('connection', function(socket) {
             var date = new Date();
             var nickTime = date.toLocaleTimeString() + "\t[" + name + "]";
 
+            message = emotRepl(message);
+            message = emoji.parse(message, "/emoji");
             io.emit('chat message', message, nickTime, pic);
-            fs.appendFile('./logs/' + getLogFileName(), userId + ' ~||~ ' + '<img src="' + pic + '"> '+ nickTime + ":\t" + message + "\n", function(err) {
+            fs.appendFile('./logs/' + getLogFileName(), userId + ' ~||~ ' + '<img class="profilePic" src="' + pic + '">'+ nickTime + ":\t" + message + "\n", function(err) {
               if(err)
               throw err;
               });
