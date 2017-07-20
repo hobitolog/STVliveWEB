@@ -91,6 +91,10 @@ Gdzie jako [regex] możemy podać wyraz/wyrażenie, np. ':)' lub 'kurczak'. Moż
 str = str.replace(/[regex]/g, '[nowy tekst]');
 ```
 
+# Plik auth.js
+- W katalogu config znajduje się plik auth.js. Poprawne skonfigurowanie jego zawartości wymagadne jest do przeprowadzenia autoryzacji przez facebooka. Jako `clientID` wpisujemy `'app ID'`, jako `clientSecret` `'app Secret'` pobrane ze strony facebook for developers dla aplikacji 'SpacjaTV'. Jako `callbackURL` wpisujemy `'http://[adres strony]/auth/facebook/callback'`
+
+
 # Wyjaśnienie kodu
 - Sekcja odpowiedzialna za import modułów oraz powiązania między ich instancjami.
 ```
