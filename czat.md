@@ -1,5 +1,6 @@
 ## Czat
-W pierwszym wydaniu czatu mamy 2 okienka do wprowadzania danych. Pierwsze to pole na nick, drugie na wiadomość. Wiadomości wysyłamy zatwierdzająć wiadomość enterem lub klikając przycisko "send".
+Aby wysłać wiadomość należy zalogować się przyciskiem "Log in with facebook". Jeśli ktoś tego wcześniej nie robił zostanie poproszony o nadanie uprawnień aplikacji do pobrania podstawowych danych, emaila oraz zdjęcia profilowego. Po zalogowaniu piszemy jako osoba([Imię Nazwisko]), która się zalogowała. Wpisaną wiadomość należy zatwierdzić enterem, lub przyciskiem "send".
+Czat obsługuje emoji wymienione w [tej bazie](https://www.webpagefx.com/tools/emoji-cheat-sheet/) + kappa + spacjaTV + lenny.
 
 # Wymagania
 - nodejs i npm
@@ -8,11 +9,11 @@ sudo apt-get install nodejs
 sudo apt-get install npm
 ```
 
-- moduły express oraz socket.io do node'a
+- moduły express oraz socket.io oraz kilka innych. Będąc w folderze zawierającym package.json wystarczy wpisać:
 ```
-sudo npm install --save express
-sudo npm install --save socket.io
+sudo npm install
 ```
+Komenda ta zainstaluje wszystkie moduły zawarte w pliku package.json. Zawiera on moduły potrzebne do działania całości projektu.
 
 - Mongodb do przechowywania danych użytkowników.
 Aby zainstalować mongodb wpisujemy kolejno:
@@ -75,6 +76,19 @@ mongo
 Aby przełączyć się na bazę o nazwie [nazwa] należy wpisać komendę:
 ```
 use [nazwa]
+```
+
+# Emoji!
+- Emoji obsługiwane są przez [emoji-parser](https://github.com/frissdiegurke/emoji-parser)
+- Moduł obsługuje emoji zawarte w [tej bazie](https://www.webpagefx.com/tools/emoji-cheat-sheet/) + kappa + spacjaTV + lenny.
+- Dodawanie własnych emotikon:
+Aby dodać emotikonę należy dopisać linię(przed `return str`!!!):
+```
+str = str.replace(/[regex]/g, '<img class="emoji" src="emoji/[nazwa pliku]">');
+```
+Gdzie jako [regex] możemy podać wyraz/wyrażenie, np. ':)' lub 'kurczak'. Możemy podać również wyrażenie regularne akceptujące wszystkie wyrazy spełniające określony warunek, np. '\:[\)\]\>]'. Podając przykładowy regex zastąpimy ':)' ':]' ':>' podanym przez nas wyrażeniem/obrazkiem. Jeśli chcemy aby był to obrazek to należy dodać go do folderu '/emoji' oraz wpisać jego nazwę w miejsce [nazwa pliku]. Jeśli zaś chcemy coś zastąpić tekstem wystarczy dopisać:
+```
+str = str.replace(/[regex]/g, '[nowy tekst]');
 ```
 
 # Wyjaśnienie kodu
