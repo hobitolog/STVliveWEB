@@ -507,8 +507,8 @@ io.on('connection', function(socket) {
         for(i=0; i<logs.length; i++) {
           if(logs[i] == null || logs[i] == "")
           break;
-          msg = logs[i].indexOf(' ~||~ '); //msg jako pomocnicza do przechowywanie indexu przerywnika
-          socket.emit('log message', logs[i].slice(Number(msg) + 5));
+          msg = logs[i].split(' ~||~ ');
+          socket.emit('chat message', msg[3], msg[2], msg[1]); //message/nickDate/pic
           logs[i]="";
           }}
           });
@@ -538,12 +538,12 @@ io.on('connection', function(socket) {
           socket.emit('log message', 'Log in with facebook to send a message!');
           }	else {
             var date = new Date();
-            var nickTime = date.toLocaleTimeString() + "\t[" + name + "]";
+            var nickTime = "[" + name + "]\t" + date.toLocaleTimeString();
 
             message = emotRepl(message);
             message = emoji.parse(message, "/emoji");
             io.emit('chat message', message, nickTime, pic);
-            fs.appendFile('./logs/' + getLogFileName(), userId + ' ~||~ ' + '<img class="profilePic" src="' + pic + '">'+ nickTime + ":\t" + message + "\n", function(err) {
+            fs.appendFile('./logs/' + getLogFileName(), userId + ' ~||~ ' + pic + ' ~||~ '+ nickTime + " ~||~ " + message + "\n", function(err) {
               if(err)
               throw err;
               });
