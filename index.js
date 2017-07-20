@@ -233,24 +233,36 @@ function getCheckBoxCode(quality, advanced) {
 }
 
 function playOfflineFile() {
-  if(fileList.length > 0 && settings.qualities.filter(x => x.selectedOffline).length > 0)
+  if(playOffline)
   {
-    var f = fileList.shift()
-    fileList.push(f)
-    var fpath = path.join(__dirname, '/videos', f)
-    console.log('Now playing: ' + f);
-    var cmd = 'ffmpeg -re -i ' + fpath + ' -c copy -f flv rtmp://localhost:1935/offline/' + offlineStreamKey
-    exec(cmd, function(e, stdout, stderr){
-      if (e instanceof Error) {
-          console.error(e);
-        }
-        playOfflineFile()
-    })
+    if(fileList.length > 0 && settings.qualities.filter(x => x.selectedOffline).length > 0)
+    {
+      var f = fileList.shift()
+      fileList.push(f)
+      var fpath = path.join(__dirname, '/videos', f)
+      if( fs.existsSync(fpath) )
+      {
+        console.log('Now playing: ' + f);
+        var cmd = 'ffmpeg -re -i ' + fpath + ' -c copy -f flv rtmp://localhost:1935/offline/' + offlineStreamKey
+        ffmpegProcess = exec(cmd, function(e, stdout, stderr){
+          if (e instanceof Error) {
+              console.error(e);
+            }
+            playOfflineFile()
+        })
+      }
+      else {
+        console.log('[WARN] File ' + fpath + ' not found. Offline transmission aborted.');
+      }
+    }
+    else {
+      console.log('[WARN] No offline files to play or no qualities specified.');
+      console.log('files: ' + fileList);
+      console.log('qualities: ' + settings.qualities.filter(x => x.selectedOffline));
+    }
   }
   else {
-    console.log(fileList);
-    console.log(settings.qualities.filter(x => x.selectedOffline));
-    console.log('[WARN] No offline files to play or no qualities specified.');
+      console.log('[INFO] Playing Offline disabled');
   }
 }
 
@@ -273,6 +285,9 @@ app.get('/admin', function (req, res){
   {
     fs.readFile(path.join(__dirname, '/html', '/admin.html'),'utf8', function (err, html) {
         var $ = cheerio.load(html)
+
+            var buttonText = playOffline ? "Zatrzymaj transmisję zastępczą" : "Wznów transmisję zastępczą"
+            $('button[id=switchPlayingButton]').append(buttonText)
 
             if (fileList.length == 0) {
                $('ul[id=offlineFiles]').append('Folder /videos jest pusty.')
@@ -322,7 +337,6 @@ app.post('/saveOfflineSettings', function (req, res) {
       }
 
       saveConfig(true)
-      //playOfflineFile()
     })
     res.redirect('/admin')
   }
@@ -338,7 +352,27 @@ app.post('/reloadOfflineFiles', function (req, res) {
   if (topSecretAuth(req))
   {
     loadOfflineFiles()
-    //playOfflineFile()
+    res.redirect('/admin')
+  }
+  else
+  {
+    res.statusCode = 401
+    res.setHeader('WWW-Authenticate', 'Basic realm="admin"')
+    res.end('Access denied')
+  }
+})
+
+app.post('/switchPlayingOffline', function (req, res) {
+  if (topSecretAuth(req))
+  {
+    if (playOffline === true) {
+      playOffline = false
+      ffmpegProcess.kill()
+    }
+    else {
+      playOffline = true
+      playOfflineFile()
+    }
     res.redirect('/admin')
   }
   else
@@ -509,6 +543,7 @@ loadSettings()
 var offlineStreamKey = crypto.randomBytes(20).toString('hex')
 //load list of offline files
 loadOfflineFiles()
+var playOffline = true
 //start server
 http.listen(80, function () {
   console.log("Serwer OK")

@@ -29,6 +29,7 @@ Ustawienia<br>
 </form>
 
 <form id="reloadFiles" action="reloadOfflineFiles" method="post" hidden="hidden"></form>
+<form id="switchPlaying" action="switchPlayingOffline" method="post" hidden="hidden"></form>
 
 <form id="offlineSettings" action="saveOfflineSettings" method="post">
   <fieldset>
@@ -37,6 +38,7 @@ Ustawienia<br>
       <ul id="offlineFiles">
       </ul>
       <button type="button" onclick="document.getElementById('reloadFiles').submit();">Odśwież listę plików</button>
+      <button id="switchPlayingButton" type="button" onclick="document.getElementById('switchPlaying').submit();"></button>
       <br>Jakość dla transmisji zastępczej:<br>
       <div id="offlineCheckboxes">|</div>
       <br>
