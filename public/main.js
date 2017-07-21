@@ -13,7 +13,6 @@ function checkOnline() {
   }
 }
 
-
 if(Hls.isSupported())
 {
   console.log("HLS supported");
@@ -21,7 +20,7 @@ if(Hls.isSupported())
   var hlsOffline = new Hls()
   var nowPlaying = sources.ONLINE
   hlsOnline.loadSource(liveSource)
-  var onlineChecker = setInterval( function(){ checkOnline() }, 10000)
+  setInterval( checkOnline , 10000)
 }
 
 function switchToOffline() {
@@ -130,3 +129,14 @@ function selectQuality()
     }
   }
 }
+
+//********** HLS end
+
+function getLiveStatus() {
+  $.get("/getLiveStatus", function(data, status) {
+    $('#liveStatus').empty()
+    console.log(status);
+    $('#liveStatus').append(data)
+  })
+}
+setInterval( getLiveStatus, 10000)

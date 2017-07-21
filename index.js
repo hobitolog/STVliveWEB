@@ -11,6 +11,7 @@ var crypto = require('crypto')
 var qs = require('querystring')
 var exec = require('child_process').exec
 var execSync = require('child_process').execSync
+var request = require('request');
 var app = express()
 var http = require('http').Server(app);
 
@@ -34,7 +35,6 @@ usersMap = new Map();
 var configDB = require('./config/database.js');
 mongoose.connect(configDB.url);
 require('./config/passport')(passport);
-
 
 function getLogFileName() {
   var date = new Date();
@@ -108,7 +108,7 @@ function saveConfig( reloadNginx, onStart) {
           if(q.selected) {
               nginxConf.write('\n-c:v ')
               nginxConf.write(q.video.codec)
-              nginxConf.write(' -vf scale=')
+              nginxConf.write(' -aspect 16:9 -vf scale=')
               nginxConf.write(q.video.resolution.replace('x', ':'))
               nginxConf.write(' -b:v ')
               nginxConf.write(q.video.bitrate)
@@ -138,7 +138,7 @@ function saveConfig( reloadNginx, onStart) {
           if(q.selectedOffline) {
               nginxConf.write('\n-c:v ')
               nginxConf.write(q.video.codec)
-              nginxConf.write(' -vf scale=')
+              nginxConf.write(' -aspect 16:9 -vf scale=')
               nginxConf.write(q.video.resolution.replace('x', ':'))
               nginxConf.write(' -b:v ')
               nginxConf.write(q.video.bitrate)
@@ -280,6 +280,29 @@ function playOfflineFile() {
   }
 }
 
+function updateLiveStatus() {
+
+  request("http://localhost:8081/stat", function (err, res, body) {
+    if(!err)
+    {
+      var $ = cheerio.load(body,
+      {
+        xmlMode: true
+      })
+
+      if($("application:contains('hlsOnline')").find('stream').length > 0)
+      {
+          liveStatus = '<p style="color:red;">LIVE - ' + $("application:contains('hlsOnline')").find('nclients').last().text() + ' oglądających</p>'
+      }
+      else {
+        liveStatus = '<p>OFFLINE</p>'
+      }
+    }
+    else {
+      console.log(err);
+    }
+  })
+}
 // serve index.html
 app.get('/', function (req, res) {
   //TODO: chat
@@ -324,6 +347,10 @@ app.get('/admin', function (req, res){
     res.setHeader('WWW-Authenticate', 'Basic realm="admin"')
     res.end('Access denied')
   }
+})
+
+app.get('/getLiveStatus', function (req, res) {
+  res.send(liveStatus)
 })
 
 app.post('/saveOfflineSettings', function (req, res) {
@@ -567,6 +594,9 @@ var playOffline = true
 //start server
 http.listen(80, function () {
   console.log("Serwer OK")
+
+  liveStatus = ""
+  setInterval( updateLiveStatus , 5000)
 
   // if nginx is running
   if(fs.existsSync(path.join(settings.nginxPath, '/logs/nginx.pid')))
