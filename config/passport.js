@@ -11,7 +11,7 @@ module.exports = function(passport) {
 	passport.serializeUser(function(user, done) {
 		done(null, user.id);
 	});
-	
+
 //used to deserializa the user
 	passport.deserializeUser(function(id, done) {
 		User.findById(id, function(err, user) {
@@ -46,22 +46,22 @@ function(token, refreshToken, profile, done) {
 			//jeśli nie ==> stwórz nowego
 			var newUser = new User();
 			//uzupełnij model
-			newUser.facebook.id 	= profile.id;
+			newUser.facebook.id 		= profile.id;
 			newUser.facebook.token	= token;
-			newUser.facebook.name 	= profile.name.displayName;
+			newUser.facebook.name 	= profile.displayName;
 			newUser.facebook.email	= profile.emails[0].value;
 			newUser.facebook.photo	= profile.photos[0].value;
+			newUser.facebook.role		= 'u'; //After first login set role: user
 			//zapisz
 			newUser.save(function(err) {
 				if(err)
 					throw err;
-				
+
 				//jeśli się udało to zwróć użytkownika
 				return done(null, newUser);
 			});
 			}
 		});
 	});
-	}));	
+	}));
 };
-

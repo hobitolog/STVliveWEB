@@ -28,9 +28,10 @@ var emoji = require('emoji-parser');
 emoji.init(__dirname + "/emoji").update();
 var User = require('./app/models/user');
 
-//Zmienne
+//Variables
 var streamNumber = Number(fs.readFileSync('stream_number'));
 usersMap = new Map();
+var delay = 0; //Default value of chat message delay = 0
 
 var configDB = require('./config/database.js');
 mongoose.connect(configDB.url);
@@ -40,6 +41,27 @@ function getLogFileName() {
   var date = new Date();
   var fileDate = date.getFullYear() + (date.getMonth() < 9 ? "0" : "") + (date.getMonth() + 1) + (date.getDate() < 10 ? "0" : "") + date.getDate();
   return fileDate + "_" + streamNumber;
+}
+
+function setUserRole(id, role) {
+  var reg = /^[amub]$/;
+  if(!reg.test(role)) {
+    return -1;
+  }
+  User.findOne({'facebook.id' : usersMap.get(id) }, function(err, user) {
+    if(err) {
+      return -2;
+      }
+    if(user) {
+      user.facebook.role = role;
+      user.save(function(err) {
+      if(err)
+        return -2;
+
+      return 0;
+      });
+      }
+    });
 }
 
 function emotRepl(str)
@@ -305,7 +327,6 @@ function updateLiveStatus() {
 }
 // serve index.html
 app.get('/', function (req, res) {
-  //TODO: chat
   res.sendFile(path.join(__dirname, '/html', '/index.html'))
   if(req.isAuthenticated()){
   	// Sprawdzanie czy użytkownik jest zalogowany i dopisywanie go do aktywnych socketów
@@ -519,6 +540,7 @@ io.on('connection', function(socket) {
   var name = "";
   var pic = "";
   var userId = "";
+  var role = "";
   //wypisanie historii czatu
 	fs.readFile('./logs/' + getLogFileName(), 'utf8', function(err, msg) {
     if(err) {
@@ -553,34 +575,123 @@ io.on('connection', function(socket) {
         name = user.facebook.name;
         pic = user.facebook.photo;
         userId = user.facebook.id;
+        role = user.facebook.role;
         }
       });
       }
 
       socket.on('chat message', function(message){
         var reg = /^[\s\t]*$/;
-        if(reg.test(message))
-        socket.emit('log message', 'Your message was empty!');
-        else if(name=="unauthorized" || name=="") {
+        var commandRegex = /^(\#[a-zA-Z]+)\ ([0-9]+)$/; //Regex for #command [number]
+        if(name=="unauthorized" || name=="") {
           socket.emit('log message', 'Log in with facebook to send a message!');
-          }	else {
-            var date = new Date();
-            var nickTime = "[" + name + "]\t" + date.toLocaleTimeString();
-
-            message = emotRepl(message);
-            message = emoji.parse(message, "/emoji");
-            io.emit('chat message', message, nickTime, pic);
-            fs.appendFile('./logs/' + getLogFileName(), userId + ' ~||~ ' + pic + ' ~||~ '+ nickTime + " ~||~ " + message + "\n", function(err) {
-              if(err)
-              throw err;
-              });
+        } else if(role=='b') {
+          socket.emit('log message', 'You are banned! If you want to change it, contact administator.');
+        } else if(reg.test(message)) {
+          socket.emit('log message', 'Your message was empty!');
+        }	else if(commandRegex.test(message)) {
+          regexParts = commandRegex.exec(message); //[0] = whole match, [1] = command, [2] = userId/time/messageId
+          switch (regexParts[1]) {
+            case '#ban':
+              if(role!='a' && role!='m') {
+                socket.emit('log messsage', 'U have not right to do this!');
+              } else if(setUserRole(regexParts[2], 'b')!=0) {
+                socket.emit('log message', "Database error! It is possible that user id wasn't correct.");
+              } else {
+                socket.emit('log message', 'User: ' + regexParts[2] + ' banned!');
+                io.emit('statusChange', regexParts[2]);
               }
-              });
+              break;
+            case '#unban':
+            if(role!='a' && role!='m') {
+              socket.emit('log messsage', 'U have not right to do this!');
+            } else if(setUserRole(regexParts[2], 'b')!=0) {
+              socket.emit('log message', "Database error! It is possible that user id wasn't correct.");
+            } else {
+              socket.emit('log message', 'User: ' + regexParts[2] + ' unbanned!');
+              io.emit('statusChange', regexParts[2]);
+            }
+              break;
+            case '#setDelay':
+              if(role!='a' && role!='m') {
+                socket.emit('log messsage', 'U have not right to do this!');
+              } else if(regexParts[2] > 5 || regexParts[2] < 0) {
+                socket.emit('log messsage', "Delay value isn't correct! Choose number 0-5!");
+              } else {
+                delay = regexParts[2];
+                socket.emit('log message', 'Delay value set to: ' + regexParts[2]);
+              }
+              break;
+            case '#makeMod':
+            if(role!='a') {
+              socket.emit('log message', 'U have no right to do this! Only admin can give mod role!');
+            } else {
+              if(setUserRole(regexParts[2], 'm')!=0) {
+                socket.emit('log message', "Database error! It is possible that user id wasn't correct.");
+              } else {
+                socket.emit('log message', 'Mod role is given to: ' + regexParts[2]);
+                io.emit('statusChange', regexParts[2]);
+              }
+            }
+              break;
+            case '#takeMod':
+            if(role!='a') {
+                socket.emit('log message', 'U have no right to do this! Only admin can take mod role!');
+            } else if(setUserRole(regexParts[2], 'u')!=0) {
+              socket.emit('log message', "Database error! It is possible that user id wasn't correct.");
+            } else {
+              socket.emit('log message', 'Mod role taken from: ' + regexParts[2]);
+              io.emit('statusChange', regexParts[2]);
+            }
+              break;
+            case '#delMessage':
+              //kasowanie wiadomości
+              break;
+            default:
+            if(role=='u' || role =='b') {
+              socket.emit('log message', "You can't use server commands!");
+            } else {
+              var help = 'Uncorrect command! Choose between:\n';
+              if(role=='a') {
+                help += 'makeMod/takeMod [userId]\n'
+                + 'ban/unban [userId]';
+              } else {
+                help += 'ban/unban [userId]';
+              }
+              socket.emit('log message', help);
+            }
 
+          }
+        } else {
+          var date = new Date();
+          var nickTime = "[" + name + "]\t" + date.toLocaleTimeString();
+
+          message = emotRepl(message);
+          message = emoji.parse(message, "/emoji");
+          io.emit('chat message', message, nickTime, pic);
+          fs.appendFile('./logs/' + getLogFileName(), userId + ' ~||~ ' + pic + ' ~||~ '+ nickTime + " ~||~ " + message + "\n", function(err) {
+          if(err)
+            throw err;
+          });
+          }
+          });
+
+      socket.on('statusChange', function(id) {
+        if(id==userId) {
+          User.findOne({'facebook.id' : id }, function(err, user) {
+            if(err) {
+              return done(err);
+              }
+            if(user) {
+              role = user.facebook.role;
+              }
+            });
+        }
+      });
 
 		  socket.on('disconnect', function(socket) {
         usersMap.delete(socketIo);
-        }); //Sprzątanie
+        });
         });
 //*************************************************************
 

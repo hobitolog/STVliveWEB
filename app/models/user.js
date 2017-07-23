@@ -6,7 +6,8 @@ var userSchema = mongoose.Schema({
 		token: String,
 		email: String,
 		name: String,
-		photo: String
+		photo: String,
+		role: String		//User role: [a] Admin, [u] User, [m] Moderator, [b] Banned
 	}
 });
 
