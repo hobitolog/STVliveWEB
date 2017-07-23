@@ -614,7 +614,7 @@ io.on('connection', function(socket) {
               break;
             case '#setDelay':
               if(role!='a' && role!='m') {
-                socket.emit('log messsage', 'U have not right to do this!');
+                socket.emit('log message', 'U have not right to do this!');
               } else if(regexParts[2] > 5 || regexParts[2] < 0) {
                 socket.emit('log messsage', "Delay value isn't correct! Choose number 0-5!");
               } else {
@@ -668,7 +668,9 @@ io.on('connection', function(socket) {
 
           message = emotRepl(message);
           message = emoji.parse(message, "/emoji");
-          io.emit('chat message', message, nickTime, pic);
+          setTimeout(function() {
+            io.emit('chat message', message, nickTime, pic);
+          }, delay*1000);
           fs.appendFile('./logs/' + getLogFileName(), userId + ' ~||~ ' + pic + ' ~||~ '+ nickTime + " ~||~ " + message + "\n", function(err) {
           if(err)
             throw err;
