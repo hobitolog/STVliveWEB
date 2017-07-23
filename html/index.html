@@ -45,42 +45,8 @@
 </div>
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-	<script>
-	$(function () {
-	var socket = io();
-	$('form').submit(function(){
-	socket.emit('chat message', $('#m').val());
-	$('#m').val('');
-	return false;
-	});
-	socket.on('chat message', function(message, nick, pic){
-	$('#messages').append('<li>'
-  +'<div class="msg-bg">'
-    +'<div class="picSeg">'
-    +'<img class="profilePic" src="' + pic + '"> '
-    +'</div>'
-      +'<div class="msg-txt"'
-      +'<p class="nickDate">' + nick + '</p>' + "<p>" + message + '</p>'
-      +'</div>'
-  + '</div>'
-  + '</li>');
-  $('#messages').animate({scrollTop: $('#messages').prop("scrollHeight")}, 500);
-  });
-	socket.on('log message', function(message){
-	$('#messages').append('<li>'
-  +'<div class="msg-bg">'
-      +'<div class="log-txt"'
-      + "<p>" + message + '</p>'
-      +'</div>'
-  +'</div>'
-  +'</li>');
-  $('#messages').animate({scrollTop: $('#messages').prop("scrollHeight")}, 500);
-	});
-	socket.on('statusChange', function(id) {
-		socket.emit('statusChange', id);
-	})
-	});
-	</script>
+	<script src="chat.js"></script>
+
 </div>
 	</body>
 </html>
