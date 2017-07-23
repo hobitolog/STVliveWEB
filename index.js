@@ -54,7 +54,7 @@ function setUserRole(id, role, socket) {
     if(err) {
       socket.emit('log message', "User not found! It is possible that userId was't correct");
     }
-    if(user) {//Poprawić to, bo się coś jebie, nie zwraca dobrej wartości
+    if(user) {
       user.facebook.role = role;
       user.save(function(err) {
         if(err) {
