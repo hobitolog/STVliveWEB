@@ -45,6 +45,9 @@ socket.on('delMessage', function(msgId) {
   elem.parentNode.removeChild(elem);
 })
 
+socket.on('chatReset', function() {
+  $('#messages').empty();
+})
 
 });
 

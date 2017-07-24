@@ -33,6 +33,7 @@ var streamNumber = Number(fs.readFileSync('stream_number'));
 usersMap = new Map();
 var delay = 0; //Default value of chat message delay = 0
 var dailyMessageCounter = 0;
+countMessages();
 var actualDate = getLogFileName();
 
 var configDB = require('./config/database.js');
@@ -44,6 +45,23 @@ function getLogFileName() {
   var fileDate = date.getFullYear() + (date.getMonth() < 9 ? "0" : "") + (date.getMonth() + 1) + (date.getDate() < 10 ? "0" : "") + date.getDate();
   return fileDate + "_" + streamNumber;
 }
+
+function countMessages() {
+  var logFileName = './logs/' + getLogFileName();
+  fs.readFile(logFileName, 'utf8', function(err, msg) {
+    if(err) {
+      if(err.code === "ENOENT") {
+        dailyMessageCounter = 0;
+        return;
+      } else {
+        throw err;
+      }
+      }	else {
+        var logs = msg.split("\n");
+        dailyMessageCounter=logs.length;
+          }
+    });
+  }
 
 function delMessage(msgId) {
   var logFileName = './logs/' + getLogFileName();
@@ -76,6 +94,7 @@ function delMessage(msgId) {
         }
           });
 }
+
 
 function setUserRole(id, role, socket) {
   var reg = /^[amub]$/;
@@ -670,14 +689,33 @@ io.on('connection', function(socket) {
               setUserRole(regexParts[2], 'u');
             }
               break;
+            case '#chatReset':
+            if(role!='a') {
+                socket.emit('log message', 'U have no right to do this! Only admin can reset chat!');
+            } else {
+              io.emit('chatReset');
+              if(streamNumber<999) {
+                streamNumber++;
+              } else {
+                streamNumber=0;
+              }
+              fs.writeFile('stream_number', streamNumber, function(err) {
+                if(err) {
+                  throw err;
+                }
+              })
+            }
+
+              break;
             default:
             if(role=='u' || role =='b') {
               socket.emit('log message', "You can't use server commands!");
             } else {
               var help = 'Uncorrect command! Choose between:\n';
               if(role=='a') {
-                help += 'makeMod/takeMod [userId]\n'
-                + 'ban/unban [userId]';
+                help += '#makeMod/#takeMod [userId] '
+                + '#ban/#unban [userId] '
+                + '#chatReset [randomNumbers]';
               } else {
                 help += 'ban/unban [userId]';
               }
@@ -725,6 +763,7 @@ io.on('connection', function(socket) {
         delMessage(delMessageId);
         io.emit('delMessage', delMessageId);
       })
+
 
 		  socket.on('disconnect', function(socket) {
         usersMap.delete(socketIo);
