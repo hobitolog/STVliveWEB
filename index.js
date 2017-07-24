@@ -648,7 +648,23 @@ io.on('connection', function(socket) {
           socket.emit('log message', 'You are banned! If you want to change it, contact administator.');
         } else if(reg.test(message)) {
           socket.emit('log message', 'Your message was empty!');
-        }	else if(commandRegex.test(message)) {
+        }	else if (/^\#chatReset$/.test(message)) {
+          if(role!='a') {
+              socket.emit('log message', 'U have no right to do this! Only admin can reset chat!');
+          } else {
+            io.emit('chatReset');
+            if(streamNumber<999) {
+              streamNumber++;
+            } else {
+              streamNumber=0;
+            }
+            fs.writeFile('stream_number', streamNumber, function(err) {
+              if(err) {
+                throw err;
+              }
+            })
+          }
+        } else if(commandRegex.test(message)) {
           regexParts = commandRegex.exec(message); //[0] = whole match, [1] = command, [2] = userId/time/messageId
           switch (regexParts[1]) {
             case '#ban':
@@ -688,24 +704,6 @@ io.on('connection', function(socket) {
             } else {
               setUserRole(regexParts[2], 'u');
             }
-              break;
-            case '#chatReset':
-            if(role!='a') {
-                socket.emit('log message', 'U have no right to do this! Only admin can reset chat!');
-            } else {
-              io.emit('chatReset');
-              if(streamNumber<999) {
-                streamNumber++;
-              } else {
-                streamNumber=0;
-              }
-              fs.writeFile('stream_number', streamNumber, function(err) {
-                if(err) {
-                  throw err;
-                }
-              })
-            }
-
               break;
             default:
             if(role=='u' || role =='b') {
