@@ -32,6 +32,8 @@ var User = require('./app/models/user');
 var streamNumber = Number(fs.readFileSync('stream_number'));
 usersMap = new Map();
 var delay = 0; //Default value of chat message delay = 0
+var dailyMessageCounter = 0;
+var actualDate = getLogFileName();
 
 var configDB = require('./config/database.js');
 mongoose.connect(configDB.url);
@@ -43,9 +45,40 @@ function getLogFileName() {
   return fileDate + "_" + streamNumber;
 }
 
+function delMessage(msgId) {
+  var logFileName = './logs/' + getLogFileName();
+  fs.readFile(logFileName, 'utf8', function(err, msg) {
+    if(err) {
+      if(err.code === "ENOENT") {
+        //File does not exist, so you don`t have to do anything
+        return;
+      } else {
+        throw err;
+      }
+      }	else {
+        var logs = msg.split("\n");
+        for(i=0; i<logs.length; i++) {
+          if(logs[i] == null || logs[i] == "")
+          break;
+          msg = logs[i].split(' ~||~ ');//userId/pic/name/time/messageId/message
+          if(msg[4]==msgId) {
+            msg[4]='deleted'
+            logs[i]=msg.join(' ~||~ ');
+            break;
+          }
+
+          }
+          fs.writeFile(logFileName, logs.join('\n'), function(err) {
+            if(err) {
+              throw err;
+            }
+          })
+        }
+          });
+}
+
 function setUserRole(id, role, socket) {
   var reg = /^[amub]$/;
-  var ret = "-3";
   if(!reg.test(role)) {
     socket.emit('log message', 'Uncorrect role! Tell admin about it!');
   }
@@ -65,7 +98,6 @@ function setUserRole(id, role, socket) {
       });
       }
     });
-    return ret;
 }
 
 function emotRepl(str)
@@ -560,8 +592,11 @@ io.on('connection', function(socket) {
         for(i=0; i<logs.length; i++) {
           if(logs[i] == null || logs[i] == "")
           break;
-          msg = logs[i].split(' ~||~ ');//userId/pic/name/time/message
-          socket.emit('chat message', msg[4], msg[2], msg[1], msg[0], msg[3]); //message, nick, pic, usrId, time
+          msg = logs[i].split(' ~||~ ');//userId/pic/name/time/messageId/message
+          if(msg[4]=='deleted') {
+            continue;
+          }
+          socket.emit('chat message', msg[5], msg[2], msg[1], msg[0], msg[3], msg[4]); //message, nick, pic, usrId, time
           logs[i]="";
           }}
           });
@@ -635,9 +670,6 @@ io.on('connection', function(socket) {
               setUserRole(regexParts[2], 'u');
             }
               break;
-            case '#delMessage':
-              //kasowanie wiadomości
-              break;
             default:
             if(role=='u' || role =='b') {
               socket.emit('log message', "You can't use server commands!");
@@ -655,14 +687,20 @@ io.on('connection', function(socket) {
           }
         } else {
           var date = new Date();
-          var nickTime = "[" + name + "]\t" + date.toLocaleTimeString();
+          if(actualDate!=getLogFileName()){
+            actualDate=getLogFileName();
+            dailyMessageCounter=0;
+          }
+          var messageId = 'm' + dailyMessageCounter;
+          dailyMessageCounter++;
 
+          message = message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
           message = emotRepl(message);
           message = emoji.parse(message, "/emoji");
           setTimeout(function() {
-            io.emit('chat message', message, name, pic, userId, date.toLocaleTimeString());
+            io.emit('chat message', message, name, pic, userId, date.toLocaleTimeString(), messageId);
           }, delay*1000);
-          fs.appendFile('./logs/' + getLogFileName(), userId + ' ~||~ ' + pic + ' ~||~ '+ name + " ~||~ " + date.toLocaleTimeString() + " ~||~ " + message + "\n", function(err) {
+          fs.appendFile('./logs/' + getLogFileName(), userId + ' ~||~ ' + pic + ' ~||~ '+ name + " ~||~ " + date.toLocaleTimeString() + " ~||~ " + messageId + " ~||~ " + message + "\n", function(err) {
           if(err)
             throw err;
           });
@@ -682,6 +720,11 @@ io.on('connection', function(socket) {
             });
         }
       });
+
+      socket.on('delMessage', function(delMessageId) {
+        delMessage(delMessageId);
+        io.emit('delMessage', delMessageId);
+      })
 
 		  socket.on('disconnect', function(socket) {
         usersMap.delete(socketIo);
