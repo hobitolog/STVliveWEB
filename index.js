@@ -416,6 +416,13 @@ app.get('/admin', function (req, res){
             $('input[id=sk]').val(settings.streamKey)
             res.send($.html())
         })
+        if(req.isAuthenticated()){
+        	// Sprawdzanie czy użytkownik jest zalogowany i dopisywanie go do aktywnych socketów
+        	usersMap.set(req.cookies.io, req.session.passport.user);
+        	} else {
+        		//Jeśli nie jest zalogowany to wpisz, że się jest nieautoryzowany
+        		usersMap.set(req.cookies.io, 'unauthorized');
+        		}
   }
   else
   {
@@ -713,7 +720,7 @@ io.on('connection', function(socket) {
               if(role=='a') {
                 help += '#makeMod/#takeMod [userId] '
                 + '#ban/#unban [userId] '
-                + '#chatReset [randomNumbers]';
+                + '#chatReset';
               } else {
                 help += 'ban/unban [userId]';
               }
@@ -762,6 +769,19 @@ io.on('connection', function(socket) {
         io.emit('delMessage', delMessageId);
       })
 
+      socket.on('chatReset', function() {
+        io.emit('chatReset');
+        if(streamNumber<999) {
+          streamNumber++;
+        } else {
+          streamNumber=0;
+        }
+        fs.writeFile('stream_number', streamNumber, function(err) {
+          if(err) {
+            throw err;
+          }
+        })
+      })
 
 		  socket.on('disconnect', function(socket) {
         usersMap.delete(socketIo);

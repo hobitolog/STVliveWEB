@@ -54,3 +54,7 @@ socket.on('chatReset', function() {
 function delMessage(arg) {
   socket.emit('delMessage', arg)
 }
+
+function reset() {
+  socket.emit('chatReset');
+}
