@@ -7,7 +7,18 @@
   </head>
   <body>
     <div id="videoSite">
-<video id="player" style="width:100%;height:auto;" poster="logo.png" controls="true" autoplay="true"></video>
+      <div id="videoContainer">
+				<video id="player" style="width:100%;height: auto;" poster="logo.png" autoplay="true" oncontextmenu="return false;"></video>
+				<div id="playerControls">
+				    <input type="image" class="littleButton" id="playPause" onclick="togglePlay()" src="player/play.png">
+				    <input type="image" class="littleButton" id="sound" onclick="toggleMute()" src="player/sound.png">
+				    <input type="range" id="volume" min="0" max="100" step="1" value="100" oninput="volumeChange()">
+						<div id="rightControls">
+							<input type="image" class="littleButton" id="TODOQUALITY" src="player/settings.png" onclick="selectQuality2()">
+					    <input type="image" class="littleButton" id="fullScreen" src="player/fullscreen.png" onclick="toggleFullScreen()">
+						</div>
+				</div>
+			</div>
 
 <div id="liveStatus"></div>
 

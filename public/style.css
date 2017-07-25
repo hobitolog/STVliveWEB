@@ -1,10 +1,159 @@
 * { margin: 0; padding: 0; box-sizing: border-box;}
-body { font: 10px Helvetica, Arial;}
+body { font: 12px Helvetica, Arial;}
 #m { border: 3; width: 80%; padding: 2px;}
 #messages { margin: 0; padding: 0; position: relative; top: 0; height: 95%; overflow-y: auto;}
 #messages li:nth_child(odd) { background: #eee;}
 #czat {background: #; width: 20%; height: 100%; position: fixed; right: 0; padding: 5px; }
 #videoSite { width: 80%; float: left;}
+#videoContainer
+{
+    width: 100%;
+  	position: relative;
+}
+#playerControls {
+  visibility: hidden;
+  width: 100%;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	padding: 5px;
+	opacity: 0;
+	-webkit-transition: opacity .3s;
+	-moz-transition: opacity .3s;
+	-o-transition: opacity .3s;
+	-ms-transition: opacity .3s;
+	transition: opacity .3s;
+}
+#rightControls {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 5px;
+}
+
+#volume{
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  width: 150px;
+  -webkit-appearance: none;
+  background: transparent;
+}
+
+#volume:focus {
+  outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+}
+/* Special styling for WebKit/Blink */
+#volume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border: 1px solid #000000;
+  height: 32px;
+  width: 16px;
+  border-radius: 3px;
+  background: #A349A4;
+  cursor: pointer;
+  margin-top: -13px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d; /* Add cool effects to your sliders! */
+}
+
+/* All the same stuff for Firefox */
+#volume::-moz-range-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 1px solid #000000;
+  height: 32px;
+  width: 16px;
+  border-radius: 3px;
+  background: #A349A4;
+  cursor: pointer;
+}
+
+/* All the same stuff for IE */
+#volume::-ms-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 1px solid #000000;
+  height: 32px;
+  width: 16px;
+  border-radius: 3px;
+  background: #A349A4;
+  cursor: pointer;
+}
+#volume::-webkit-slider-runnable-track {
+  margin-left: 5px;
+  width: 150px;
+  height: 8px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  background: #00A2E8;
+  border-radius: 1.3px;
+  border: 0.2px solid #010101;
+}
+
+#volume:focus::-webkit-slider-runnable-track {
+  background: #00A2E8;
+}
+
+#volume::-moz-range-track {
+  width: 150px;
+  height: 8px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  background: #00A2E8;
+  border-radius: 1.3px;
+  border: 0.2px solid #010101;
+}
+
+#volume::-ms-track {
+  width: 150px;
+  height: 8px;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  border-width: 16px 0;
+  color: transparent;
+}
+#volume::-ms-fill-lower {
+  background: #00A2E8;
+  border: 0.2px solid #010101;
+  border-radius: 2.6px;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+#volume:focus::-ms-fill-lower {
+  background: #00A2E8;
+}
+#volume::-ms-fill-upper {
+  background: #00A2E8;
+  border: 0.2px solid #010101;
+  border-radius: 2.6px;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+#volume:focus::-ms-fill-upper {
+  background: #00A2E8;
+}
+
+#videoContainer:hover #playerControls {
+	opacity: .9;
+}
+.littleButton {
+  width: 32px;
+  height: 32px;
+}
+
+#videoContainer:-webkit-full-screen {
+  background-color: black;
+}
+
+#videoContainer:-moz-full-screen {
+  background-color: black;
+}
+
+#videoContainer:-ms-fullscreen {
+  background-color: black;
+}
+
+#videoContainer:fullscreen {
+  background-color: black;
+}
+
 #sendButton {width: 19%;padding: 2px; float: right;}
 #inputSend {position: absolute; bottom: 1%; width: 97%;}
 #mess {position: absolute; top: 0; width: 100%; height: 88%; left: 0;}

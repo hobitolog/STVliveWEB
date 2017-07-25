@@ -6,13 +6,6 @@ var sources = {
 };
 var player = document.getElementById('player')
 
-function checkOnline() {
-  if( nowPlaying === sources.OFFLINE )
-  {
-    hlsOnline.loadSource(liveSource)
-  }
-}
-
 if(Hls.isSupported())
 {
   console.log("HLS supported");
@@ -20,7 +13,12 @@ if(Hls.isSupported())
   var hlsOffline = new Hls()
   var nowPlaying = sources.ONLINE
   hlsOnline.loadSource(liveSource)
-  setInterval( checkOnline , 10000)
+  $.get("/getLiveStatus", function(data, status) {
+    $('#liveStatus').empty()
+    if (status === 'success') {
+      $('#liveStatus').append(data)
+    }
+  })
 }
 
 function switchToOffline() {
@@ -32,7 +30,6 @@ function switchToOffline() {
     nowPlaying = sources.OFFLINE
 
     hlsOffline.on(Hls.Events.MANIFEST_PARSED,function(event, data) {
-      player.play();
       $("#qualitySelect").empty()
       $("#qualitySelect").append('<option value="auto">Auto</option>')
       for (var i = 0; i < data.levels.length; i++) {
@@ -71,7 +68,6 @@ function switchToOnline() {
 
 hlsOnline.on(Hls.Events.MANIFEST_PARSED,function(event, data) {
   switchToOnline();
-  player.play();
   $("#qualitySelect").empty()
   $("#qualitySelect").append('<option value="auto">Auto</option>')
   for (var i = 0; i < data.levels.length; i++) {
@@ -130,13 +126,117 @@ function selectQuality()
   }
 }
 
-//********** HLS end
-
 function getLiveStatus() {
   $.get("/getLiveStatus", function(data, status) {
     $('#liveStatus').empty()
-    console.log(status);
-    $('#liveStatus').append(data)
+    if (status === 'success') {
+      $('#liveStatus').append(data)
+    }
   })
+  if( nowPlaying === sources.OFFLINE )
+  {
+    hlsOnline.loadSource(liveSource)
+  }
 }
 setInterval( getLiveStatus, 10000)
+
+//********** PLAYER
+
+player.onplay = function() {
+    $('#playPause')[0].src = 'player/pause.png'
+    $('#playerControls')[0].style.visibility = 'visible'
+};
+
+player.onpause = function() {
+    $('#playPause')[0].src = 'player/play.png'
+};
+
+function togglePlay() {
+  if (player.paused) {
+    player.play()
+  }
+  else {
+    player.pause()
+  }
+}
+
+function toggleMute() {
+  player.muted = !player.muted
+  if(player.muted)
+  {
+    $('#sound')[0].src = 'player/muted.png'
+  }
+  else {
+    $('#sound')[0].src = 'player/sound.png'
+  }
+}
+
+function volumeChange() {
+  player.volume = $('#volume')[0].value/100
+}
+
+function selectQuality2() {
+  //TODO
+  alert("TUDUDU")
+}
+
+function toggleFullScreen() {
+  console.log('toggle');
+  if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement)
+  {
+    if (document.exitFullscreen) {
+    	document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+    	document.webkitExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+    	document.mozCancelFullScreen();
+    } else if (document.msExitFullscreen) {
+    	document.msExitFullscreen();
+    }
+  }
+  else {
+    var video = $('#videoContainer')[0]
+    if (video.requestFullscreen) {
+      video.requestFullscreen();
+    } else if (video.mozRequestFullScreen) {
+      video.mozRequestFullScreen(); // Firefox
+    } else if (video.webkitRequestFullscreen) {
+      video.webkitRequestFullscreen(); // Chrome and Safari
+    }
+  }
+
+
+
+}
+//TODO: cursor: none
+// działa na IE
+// nie działa na Chrome
+// nie testowane na Firefoxie
+$(function () {
+    var timer;
+    var fadeInBuffer = false;
+    $(document).mousemove(function () {
+      if ($('#videoContainer').is(':hover')) {
+        if (!fadeInBuffer) {
+            if (timer) {
+                clearTimeout(timer);
+                timer = 0;
+            }
+
+            $('html').css({ cursor: ''  });
+        } else {
+            $('#videoContainer').css("cursor", 'default');
+            $('#playerControls').css("opacity",".9")
+            fadeInBuffer = false;
+        }
+
+        timer = setTimeout(function () {
+            $('#videoContainer').css("cursor", 'none');
+            $('#playerControls').css("opacity","0")
+
+            fadeInBuffer = true;
+        }, 1000)
+      }
+    });
+    $('#videoContainer').css("cursor", 'default');
+});
