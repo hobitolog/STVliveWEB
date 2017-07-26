@@ -1,10 +1,40 @@
-* { margin: 0; padding: 0; box-sizing: border-box;}
-body { font: 12px Helvetica, Arial;}
-#m { border: 3; width: 80%; padding: 2px;}
-#messages { margin: 0; padding: 0; position: relative; top: 0; height: 95%; overflow-y: auto;}
-#messages li:nth_child(odd) { background: #eee;}
-#czat {background: #FFF; width: 300px; height: 100%; position: fixed; right: 0; padding: 5px; }
-#videoSite {width: calc(100% - 300px); float: left;}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font: 12px Helvetica, Arial;
+}
+#m {
+  border: 3;
+  width: 80%;
+  padding: 2px;
+}
+#messages {
+  margin: 0;
+  padding: 0;
+  position: relative;
+  top: 0;
+  height: 95%;
+  overflow-y: auto;
+}
+#messages li:nth_child(odd) {
+  background: #eee;
+}
+#czat {
+  background: #FFF;
+  width: 300px;
+  height: 100%;
+  position: fixed;
+  right: 0;
+  padding: 5px;
+  display: block;
+}
+#videoSite {
+  width: calc(100% - 300px);
+  float: left;
+}
 #videoContainer
 {
     width: 100%;
@@ -154,15 +184,95 @@ body { font: 12px Helvetica, Arial;}
   background-color: black;
 }
 
-#sendButton {width: 19%;padding: 2px; float: right;}
-#inputSend {position: absolute; bottom: 0%; width: 97%; height: 60px;}
-#mess {position: absolute; top: 0; width: 100%; height: calc(100% - 60px); left: 0;}
-#delButton {background-color: red; border-radius: 50%; width: 10px; height: 10px;}
-ul {list-style: none;}
-.emoji {width: 20px; height: 20px; display: inline;}
-.profilePic {width: 35px; height: 35px; top: 0; }
-.logo {width: 50px; height: 25px;}
-.picSeg {width: auto; height: auto; display: inline; left: 0;}
-.msg-txt {width: calc(100% - 36px); height: auto; display: inline; float: right; right: 0}
-.msg-bg {position: relative; height: auto; overflow: hidden; border-bottom: 1px solid white;  padding: 1px}
-.log-txt {width: 100%; height: auto; display: inline; }
+#sendButton {
+  width: 19%;
+  padding: 2px;
+  float: right;
+}
+#inputSend {
+  position: absolute;
+  bottom: 0%;
+  width: 97%;
+  height: 60px;
+}
+#mess {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: calc(100% - 60px);
+  left: 0;
+}
+#delButton {
+  background-color: red;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+}
+#showChat {
+  display: none;
+  position: fixed;
+  right: 0;
+  height: 100%;
+}
+#hideChat {
+  display: block;
+  width:95px;
+  right: 0;
+  bottom: 0;
+  position: absolute;
+  z-index: 100;
+}
+#fbButton {
+  position: absolute;
+  z-index: 100;
+  width:195px;
+}
+#resetButton {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  width: 95px;
+}
+ul {
+  list-style: none;
+}
+.emoji {
+  width: 20px;
+  height: 20px;
+  display: inline;
+}
+.profilePic {
+  width: 35px;
+  height: 35px;
+  top: 0;
+}
+.logo {
+  width: 50px;
+  height: 25px;
+}
+.picSeg {
+  width: auto;
+  height: auto;
+  display: inline;
+  left: 0;
+}
+.msg-txt {
+  width: calc(100% - 36px);
+  height: auto;
+  display: inline;
+  float: right;
+  right: 0
+}
+.msg-bg {
+  position: relative;
+  height: auto;
+  overflow: hidden;
+  border-bottom: 1px solid white;
+  padding: 1px
+}
+.log-txt {
+  width: 100%;
+  height: auto;
+  display: inline;
+}

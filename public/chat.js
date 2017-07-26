@@ -58,3 +58,20 @@ function delMessage(arg) {
 function reset() {
   socket.emit('chatReset');
 }
+function hideChat() {
+  var chat = document.getElementById('czat');
+  var videoSite = document.getElementById('videoSite');
+  var showChat = document.getElementById('showChat');
+  chat.style.display = 'none';
+  videoSite.style.width = 'calc(100% - 30px)';
+  showChat.style.display = 'block';
+}
+
+function showChat() {
+  var chat = document.getElementById('czat');
+  var videoSite = document.getElementById('videoSite');
+  var showChat = document.getElementById('showChat');
+  chat.style.display = 'block';
+  videoSite.style.width = 'calc(100% - 300px)';
+  showChat.style.display = 'none';
+}

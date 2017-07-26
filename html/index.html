@@ -41,17 +41,19 @@
 			</footer>
 	</div>
 		<!--**************************************************-->
+		<button id="showChat" type="button" onclick="showChat()">S<br>h<br>o<br>w<br><br><br>C<br>h<br>a<br>t</button>
 		<div id="czat" style="border: 1px solid black">
-<div id="mess">
-	<ul id="messages"></ul>
-</div>
-  <div id="inputSend">
-	<form action="">
-	<input id="m" autocomplete="off" />
-	<button id="sendButton">Send</button>
-	<a href="/auth/facebook" class="btn btn-primary"><span class="fa fa-facebook"><button type="button">Log in with facebook!</button></span></a>
-	</form>
-</div>
+			<div id="mess">
+				<ul id="messages"></ul>
+				</div>
+				<div id="inputSend">
+					<form action="">
+						<input id="m" autocomplete="off" />
+						<button id="sendButton">Send</button>
+					</form>
+					<p><a href="/auth/facebook" class="btn btn-primary"><span class="fa fa-facebook"><button type="button" id="fbButton">Log in with facebook!</button></span></a>
+					<button id="hideChat" type="button" onclick="hideChat()">Hide Chat</button></p>
+				</div>
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="chat.js"></script>
