@@ -175,10 +175,6 @@ function volumeChange() {
   player.volume = $('#volume')[0].value/100
 }
 
-function selectQuality2() {
-  //TODO
-  alert("TUDUDU")
-}
 
 function toggleFullScreen() {
   console.log('toggle');

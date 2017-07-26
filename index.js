@@ -671,6 +671,25 @@ io.on('connection', function(socket) {
               }
             })
           }
+        } else if(/^\#banList$/.test(message)) {
+          if(role!='a' && role!='m') {
+            socket.emit('log message', 'U have not right to do this!');
+          } else {
+            User.find({'facebook.role' : 'b'}, function(err, users) {
+              if(err) {
+                return done(err);
+                }
+              if(users) {
+                if(users.length == 0) {
+                  socket.emit('log message', '0 users banned!');
+                } else {
+                  users.forEach(function(user) {
+                    socket.emit('log message', "User: " + user.facebook.name + " Id: " + user.facebook.id);
+                  })
+                }
+                }
+              });
+          }
         } else if(commandRegex.test(message)) {
           regexParts = commandRegex.exec(message); //[0] = whole match, [1] = command, [2] = userId/time/messageId
           switch (regexParts[1]) {
