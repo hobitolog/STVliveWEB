@@ -40,6 +40,10 @@ body {
     width: 100%;
   	position: relative;
 }
+.quality {
+  display: inline;
+  color: #00A2E8
+}
 #playerControls {
   visibility: hidden;
   width: 100%;

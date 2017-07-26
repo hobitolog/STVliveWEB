@@ -15,7 +15,10 @@
 				    <input type="image" class="littleButton" id="sound" onclick="toggleMute()" src="player/sound.png">
 				    <input type="range" id="volume" min="0" max="100" step="1" value="100" oninput="volumeChange()">
 						<div id="rightControls">
-							<input type="image" class="littleButton" id="TODOQUALITY" src="player/settings.png" onclick="selectQuality2()">
+							<div class="quality">Jakość:
+								<select id="qualitySelect" onchange="selectQuality()">
+								</select>
+							</div>
 					    <input type="image" class="littleButton" id="fullScreen" src="player/fullscreen.png" onclick="toggleFullScreen()">
 						</div>
 				</div>
@@ -23,12 +26,6 @@
 
 
 			<div id="liveStatus"></div>
-
-			<div class="quality">
-			  Jakość:
-			  <select id="qualitySelect" onchange="selectQuality()">
-			  </select>
-			</div>
 
 			<div class="info">
 			  Jakieś ważne newsy<br><br><br><br><br><br><br>
