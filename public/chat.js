@@ -49,6 +49,11 @@ socket.on('chatReset', function() {
   $('#messages').empty();
 })
 
+socket.on('setLogOut', function() {
+  document.getElementById('fbLog').href = "/logout";
+  document.getElementById('fbButton').value = "Log out!";
+})
+
 });
 
 function delMessage(arg) {

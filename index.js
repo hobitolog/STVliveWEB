@@ -584,6 +584,11 @@ app.post('/changePassword', function (req, res) {
   }
 })
 //*************************************************************
+app.get('/logout', function(req, res){
+  req.logout();
+  res.redirect('/');
+});
+
 app.get('/auth/facebook', passport.authenticate('facebook', {'scope': ['email', 'user_photos']}));
 
 app.get('/auth/facebook/callback',
@@ -598,6 +603,10 @@ app.get('/emoji/:name', function (req, res) {
 io.on('connection', function(socket) {
   var start = socket.handshake.headers.cookie.indexOf('io=');
   var socketIo = socket.handshake.headers.cookie.substring(start + 3, start + 23);
+
+  if(usersMap.get(socketIo)!='unauthorized') {
+    socket.emit('setLogOut');
+  };
 
   var name = "";
   var pic = "";
