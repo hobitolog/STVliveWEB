@@ -160,7 +160,7 @@ function saveConfig( reloadNginx, onStart) {
   {
     var nginxConf = fs.createWriteStream(path.join(settings.nginxPath, '/conf/nginx.conf'), {'flags': 'w'});
     var lineReader = require('readline').createInterface({
-      input: require('fs').createReadStream('nginx.conf')
+      input: fs.createReadStream('nginx.conf')
     });
 
     var copy = true
@@ -298,7 +298,7 @@ function loadOfflineFiles() {
 
 function topSecretAuth(req) {
   var login = auth(req)
-  if (!login || login.name !== settings.login.name || login.pass !== settings.login.pass)
+  if (!login || login.name !== settings.login.name || crypto.createHash('md5').update(login.pass).digest("hex") !== settings.login.pass)
   {
      return false
   }
@@ -572,7 +572,7 @@ app.post('/changePassword', function (req, res) {
     req.on('end', function ()
     {
       var params = qs.parse(body)
-      settings.login.pass = params.pass
+      settings.login.pass = crypto.createHash('md5').update(params.pass).digest("hex")
       saveConfig(false)
     });
     res.redirect('/admin')
