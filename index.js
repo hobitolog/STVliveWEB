@@ -37,7 +37,10 @@ countMessages();
 var actualDate = getLogFileName();
 
 var configDB = require('./config/database.js');
-mongoose.connect(configDB.url);
+mongoose.Promise = require('bluebird');
+mongoose.connect(configDB.url, {
+  useMongoClient: true
+});
 require('./config/passport')(passport);
 
 function getLogFileName() {
@@ -604,7 +607,7 @@ io.on('connection', function(socket) {
   var start = socket.handshake.headers.cookie.indexOf('io=');
   var socketIo = socket.handshake.headers.cookie.substring(start + 3, start + 23);
 
-  if(usersMap.get(socketIo)!='unauthorized') {
+  if(usersMap.get(socketIo)!='unauthorized' && usersMap.get(socketIo)!='undefined') {
     socket.emit('setLogOut');
   };
 
@@ -682,7 +685,7 @@ io.on('connection', function(socket) {
           }
         } else if(/^\#banList$/.test(message)) {
           if(role!='a' && role!='m') {
-            socket.emit('log message', 'U have not right to do this!');
+            socket.emit('log message', 'U have no right to do this!');
           } else {
             User.find({'facebook.role' : 'b'}, function(err, users) {
               if(err) {
@@ -704,21 +707,21 @@ io.on('connection', function(socket) {
           switch (regexParts[1]) {
             case '#ban':
               if(role!='a' && role!='m') {
-                socket.emit('log message', 'U have not right to do this!');
+                socket.emit('log message', 'U have no right to do this!');
               } else {
                 setUserRole(regexParts[2], 'b')
               }
               break;
             case '#unban':
             if(role!='a' && role!='m') {
-              socket.emit('log message', 'U have not right to do this!');
+              socket.emit('log message', 'U have no right to do this!');
             } else {
               setUserRole(regexParts[2], 'u');
             }
               break;
             case '#setDelay':
               if(role!='a' && role!='m') {
-                socket.emit('log message', 'U have not right to do this!');
+                socket.emit('log message', 'U have no right to do this!');
               } else if(regexParts[2] > 5 || regexParts[2] < 0) {
                 socket.emit('log message', "Delay value isn't correct! Choose number 0-5!");
               } else {

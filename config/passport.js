@@ -41,7 +41,19 @@ function(token, refreshToken, profile, done) {
 			return done(err);
 		//jesli uzytkownik się znalazł
 		if(user) {
-			return done(null, user); //zwróć użytkownika
+			user.facebook.id 		= profile.id;
+			user.facebook.token	= token;
+			user.facebook.name 	= profile.displayName;
+			user.facebook.email	= profile.emails[0].value;
+			user.facebook.photo	= profile.photos[0].value;
+			user.save(function(err) {
+				if(err)
+					throw err;
+
+				return done(null, user);
+			})
+
+			//return done(null, user); //zwróć użytkownika
 		} else {
 			//jeśli nie ==> stwórz nowego
 			var newUser = new User();

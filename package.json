@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "basic-auth": "^1.1.0",
+    "bluebird": "^3.5.1",
     "cheerio": "^1.0.0-rc.2",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.3",
