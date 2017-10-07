@@ -607,9 +607,15 @@ io.on('connection', function(socket) {
   var start = socket.handshake.headers.cookie.indexOf('io=');
   var socketIo = socket.handshake.headers.cookie.substring(start + 3, start + 23);
 
-  if(usersMap.get(socketIo)!='unauthorized' && usersMap.get(socketIo)!='undefined') {
-    socket.emit('setLogOut');
-  };
+  {
+    authorisationValue = usersMap.get(socketIo);
+          console.log("Value before: |" + authorisationValue + "|");
+    if(authorisationValue!='unauthorized' && authorisationValue) {
+      console.log("Value: |" + authorisationValue + "|");
+      socket.emit('setLogOut');
+    };
+  }
+
 
   var name = "";
   var pic = "";
