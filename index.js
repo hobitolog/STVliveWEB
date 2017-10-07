@@ -609,9 +609,7 @@ io.on('connection', function(socket) {
 
   {
     authorisationValue = usersMap.get(socketIo);
-          console.log("Value before: |" + authorisationValue + "|");
     if(authorisationValue!='unauthorized' && authorisationValue) {
-      console.log("Value: |" + authorisationValue + "|");
       socket.emit('setLogOut');
     };
   }
